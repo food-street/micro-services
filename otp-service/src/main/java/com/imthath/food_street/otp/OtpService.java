@@ -18,9 +18,10 @@ public class OtpService {
     @Value("${otp.length}")
     private int otpLength;
 
+    /// Generates an OTP for the given identifier and saves it in Redis.
+    /// If an OTP already exists for the identifier, it returns the existing OTP and resets the expiration time.
     public String generateOtp(String identifier) {
-        int maxValue = (int) Math.pow(10, otpLength) - 1;
-        String otp = String.valueOf(secureRandom.nextInt(maxValue));
+        var otp = getOtp(identifier);
         redisRepository.set(identifier, otp, timeToLive);
         return otp;
     }
@@ -37,5 +38,13 @@ public class OtpService {
             System.out.println("OTP not found for identifier " + identifier);
             return false;
         }
+    }
+
+    private String getOtp(String identifier) {
+        if (redisRepository.exists(identifier)) {
+            return redisRepository.find(identifier);
+        }
+        int maxValue = (int) Math.pow(10, otpLength) - 1;
+        return String.valueOf(secureRandom.nextInt(maxValue));
     }
 }
