@@ -31,7 +31,6 @@ jobs:
           --source=otp-service
           --platform=managed
           --min-instances=1
-          --service-account="${{ secrets.SQL_SA_EMAIL }}"
           --set-env-vars=REDIS_HOST="${{ secrets.REDIS_OTP_HOST }}"
           --set-env-vars=REDIS_PORT="${{ secrets.REDIS_OTP_PORT }}"
           --set-env-vars=REDIS_PASSWORD="${{ secrets.REDIS_OTP_PASSWORD }}"
