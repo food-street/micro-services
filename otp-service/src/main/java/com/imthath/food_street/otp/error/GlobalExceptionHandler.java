@@ -20,9 +20,16 @@ public class GlobalExceptionHandler {
 //    }
 
     @ExceptionHandler(InvalidOtpException.class)
-    public ResponseEntity<GenericError> handleNullPointerException(InvalidOtpException exception) {
+    public ResponseEntity<GenericError> handleInvalidOtp(InvalidOtpException exception) {
         return ResponseEntity
-                .status(HttpStatus.NOT_ACCEPTABLE)
+                .status(HttpStatus.CONFLICT)
+                .body(new GenericError(exception.getMessage()));
+    }
+
+    @ExceptionHandler(MissingOtpException.class)
+    public ResponseEntity<GenericError> handleMissingOtp(MissingOtpException exception) {
+        return ResponseEntity
+                .status(HttpStatus.PRECONDITION_REQUIRED)
                 .body(new GenericError(exception.getMessage()));
     }
 }
