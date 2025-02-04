@@ -44,7 +44,8 @@ public class OtpService {
         if (redisRepository.exists(identifier)) {
             return redisRepository.find(identifier);
         }
-        int maxValue = (int) Math.pow(10, otpLength) - 1;
-        return String.valueOf(secureRandom.nextInt(maxValue));
+        int maxValue = (int) Math.pow(10, otpLength);
+        int randomValue = secureRandom.nextInt(maxValue);
+        return String.format("%04d", randomValue);
     }
 }
