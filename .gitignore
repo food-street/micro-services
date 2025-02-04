@@ -6,3 +6,5 @@
 **/.mvn/
 **/.gitattributes
 **/HELP.md
+
+**/credentials.envfile
