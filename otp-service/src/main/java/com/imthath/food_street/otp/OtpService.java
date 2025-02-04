@@ -1,5 +1,6 @@
 package com.imthath.food_street.otp;
 
+import com.imthath.food_street.otp.error.InvalidOtpException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,17 +27,15 @@ public class OtpService {
         return otp;
     }
 
-    public boolean validateOtp(String identifier, String otp) {
+    public void validateOtp(String identifier, String otp) {
         try {
             String savedOtp = redisRepository.find(identifier);
-            if (savedOtp.equals(otp)) {
-                redisRepository.delete(identifier);
-                return true;
+            if (!savedOtp.equals(otp)) {
+                throw new InvalidOtpException("OTP mismatch for identifier");
             }
-            return false;
+            redisRepository.delete(identifier);
         } catch (NullPointerException e) {
-            System.out.println("OTP not found for identifier " + identifier);
-            return false;
+            throw new InvalidOtpException("OTP not found for identifier");
         }
     }
 

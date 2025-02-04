@@ -17,7 +17,7 @@ public class OtpController {
 
     @PutMapping("/validate")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public boolean validateOtp(@RequestParam String identifier, @RequestParam String otp) {
-        return otpService.validateOtp(identifier, otp);
+    public void validateOtp(@RequestParam String identifier, @RequestParam String otp) {
+        otpService.validateOtp(identifier, otp);
     }
 }
