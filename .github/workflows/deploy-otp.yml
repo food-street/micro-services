@@ -1,0 +1,37 @@
+name: Deploy OTP Service
+
+on:
+  push:
+    tags:
+      - otp-service_v*
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: 'google-github-actions/auth@v1'
+        with:
+          credentials_json: ${{ secrets.GCP_CR_SA_JSON }}
+
+      - name: Deploy to Cloud Run
+        run: >
+          gcloud
+          run
+          deploy
+          otp-service
+          --region=asia-south1
+          --source=otp-service
+          --platform=managed
+          --min-instances=1
+          --service-account="${{ secrets.SQL_SA_EMAIL }}"
+          --set-env-vars=REDIS_HOST="${{ secrets.REDIS_OTP_HOST }}"
+          --set-env-vars=REDIS_PORT="${{ secrets.REDIS_OTP_PORT }}"
+          --set-env-vars=REDIS_PASSWORD="${{ secrets.REDIS_OTP_PASSWORD }}"
