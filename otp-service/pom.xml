@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.imthath.food-street</groupId>
 	<artifactId>otp-service</artifactId>
-	<version>0.0.1</version>
+	<version>0.1.0</version>
 	<name>OTP Service</name>
 	<description>Generates and validates OTP with configurable TTL and length</description>
 	<url/>
