@@ -20,14 +20,14 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private JwtTokenProvider jwtTokenProvider;
+    private JwtManager jwtManager;
 
-    public OtpResponse sendOtp(String phone) {
+    OtpResponse sendOtp(String phone) {
         String referenceId = otpService.sendOtp(phone);
         Map<String, String> userInfo = new HashMap<>();
         userInfo.put("referenceId", referenceId);
         userInfo.put("phone", phone);
-        String identifier = jwtTokenProvider.createToken(userInfo, 2, TimeUnit.MINUTES);
+        String identifier = jwtManager.createToken(userInfo, 2, TimeUnit.MINUTES);
         User user = userRepository.findByPhoneNumber(phone);
         String maskedUserName = null;
         if (user != null) {
@@ -36,14 +36,14 @@ public class AuthService {
         return new OtpResponse(identifier, maskedUserName);
     }
 
-    public JwtResponse validateOtp(String identifier, String otp) {
-        var parsedInfo = jwtTokenProvider.parseToken(identifier);
+    JwtResponse validateOtp(String identifier, String otp) {
+        var parsedInfo = jwtManager.parseToken(identifier);
         String referenceId = parsedInfo.get("referenceId").toString();
         String phone = parsedInfo.get("phone").toString();
         boolean isValid = otpService.validateOtp(referenceId, otp);
         if (isValid) {
             User user = userRepository.findByPhoneNumber(phone);
-            String token = jwtTokenProvider.createToken(user.getId(), 30, TimeUnit.DAYS);
+            String token = jwtManager.createToken(user.getId(), 30, TimeUnit.DAYS);
             return new JwtResponse(token);
         }
         throw new IllegalArgumentException("Invalid OTP");
@@ -55,7 +55,4 @@ public class AuthService {
         }
         return name.substring(0, 2) + "***" + name.substring(name.length() - 2);
     }
-
-    public record OtpResponse(String identifier, String maskedUserName) {}
-    public record JwtResponse(String token) {}
 }

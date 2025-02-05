@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class JwtTokenProvider {
+public class JwtManager {
 
     @Value("${JWT_SECRET_SALT}")
     private String secretKey;
@@ -49,10 +49,14 @@ public class JwtTokenProvider {
     }
 
     Map<String, Object> parseToken(String token) {
-        return Jwts.parser()
+        var claims = Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+        if (claims.getExpiration().before(new Date())) {
+            throw new IllegalArgumentException("Token expired");
+        }
+        return claims;
     }
 }

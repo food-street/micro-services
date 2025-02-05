@@ -11,13 +11,12 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/send-otp")
-    public AuthService.OtpResponse sendOtp(@RequestParam String phone) {
+    OtpResponse sendOtp(@RequestParam String phone) {
         return authService.sendOtp(phone);
     }
 
     @PutMapping("/validate-otp")
-    public AuthService.JwtResponse validateOtp(@RequestParam String otp, @RequestHeader("identifier") String identifier) {
+    JwtResponse validateOtp(@RequestParam String otp, @RequestHeader("identifier") String identifier) {
         return authService.validateOtp(otp, identifier);
     }
-
 }
