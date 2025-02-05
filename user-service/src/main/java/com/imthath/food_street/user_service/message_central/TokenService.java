@@ -5,15 +5,21 @@ import org.springframework.stereotype.Service;
 
 @Service
 class TokenService {
-    @Autowired
-    TokenClient authClient;
+    static final String CUSTOMER_ID = System.getenv("MC_CUSTOMER_ID");
+    static final String KEY = System.getenv("MC_KEY");
+    static final String SCOPE = "NEW";
 
-    String authKey = "authToken";
+    @Autowired
+    TokenClient tokenClient;
+
+    String key = "authToken";
 
     String generateAuthToken() {
-        return authClient
-                .generateAuthToken(Constants.CUSTOMER_ID, Constants.KEY, Constants.SCOPE)
-                .data()
-                .token();
+        try {
+            return tokenClient.generateAuthToken(CUSTOMER_ID, SCOPE, KEY).token();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "null";
+        }
     }
 }

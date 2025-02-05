@@ -5,15 +5,19 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OtpService {
+    static final String COUNTRY_CODE = "91"; // For India
+    static final String FLOW_TYPE = "SMS";
+    static final int OTP_LENGTH = 5;
+    
     @Autowired
     private OtpClient otpClient;
 
     public String sendOtp(String mobileNumber) {
         var response = otpClient.sendOtp(
                 mobileNumber,
-                Constants.FLOW_TYPE,
-                Constants.OTP_LENGTH,
-                Constants.COUNTRY_CODE
+                FLOW_TYPE,
+                OTP_LENGTH,
+                COUNTRY_CODE
         );
         return response.data().verificationId();
     }
