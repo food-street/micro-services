@@ -12,18 +12,22 @@ public class OtpService {
     @Autowired
     private OtpClient otpClient;
 
+    @Autowired
+    private TokenService tokenService;
+
     public String sendOtp(String mobileNumber) {
         var response = otpClient.sendOtp(
                 mobileNumber,
                 FLOW_TYPE,
                 OTP_LENGTH,
-                COUNTRY_CODE
+                COUNTRY_CODE,
+                tokenService.generateAuthToken()
         );
         return response.data().verificationId();
     }
 
     public boolean validateOtp(String verificationId, String code) {
-        var response = otpClient.validateOtp(verificationId, code);
+        var response = otpClient.validateOtp(verificationId, code, tokenService.generateAuthToken());
         return response.data().isSuccess();
     }
 }

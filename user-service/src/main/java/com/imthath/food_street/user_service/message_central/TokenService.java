@@ -21,7 +21,7 @@ class TokenService {
     @Autowired
     TokenClient tokenClient;
 
-    String key = "authToken";
+    static final String HEADER_KEY = "authToken";
 
     String generateAuthToken() {
         try {

@@ -8,11 +8,20 @@ import org.springframework.web.client.support.RestClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
-class AuthClientConfig {
+class RestClientConfig {
     final String BASE_URL = "https://cpaas.messagecentral.com";
 
     @Bean
     TokenClient authClient() {
+        return createClient(TokenClient.class);
+    }
+
+    @Bean
+    OtpClient otpClient() {
+        return createClient(OtpClient.class);
+    }
+
+    private <T> T createClient(Class<T> clazz) {
         return HttpServiceProxyFactory.builderFor(
                     RestClientAdapter.create(
                         RestClient.builder()
@@ -21,28 +30,6 @@ class AuthClientConfig {
                     )
                 )
                 .build()
-                .createClient(TokenClient.class);
-    }
-}
-
-@Configuration
-class OtpClientConfig {
-    final String BASE_URL = "https://cpaas.messagecentral.com";
-
-    @Autowired
-    TokenService tokenService;
-
-    @Bean
-    OtpClient otpClient() {
-        return HttpServiceProxyFactory.builderFor(
-                        RestClientAdapter.create(
-                                RestClient.builder()
-                                        .baseUrl(BASE_URL)
-                                        .defaultHeader(tokenService.key, tokenService.generateAuthToken())
-                                        .build()
-                        )
-                )
-                .build()
-                .createClient(OtpClient.class);
+                .createClient(clazz);
     }
 }

@@ -7,4 +7,5 @@
 **/.gitattributes
 **/HELP.md
 
-**/*.env*
+**/.env
+*/data/
