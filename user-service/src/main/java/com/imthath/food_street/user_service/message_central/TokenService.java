@@ -27,7 +27,7 @@ class TokenService {
         try {
             return tokenClient.generateAuthToken(CUSTOMER_ID, SCOPE, KEY).token();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error while generating auth token: " + e.getMessage());
             return "null";
         }
     }

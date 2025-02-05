@@ -18,7 +18,7 @@ interface OtpClient {
             @RequestHeader(TokenService.HEADER_KEY) String token
     );
 
-    @GetExchange("/verification/v3/validate")
+    @GetExchange("/verification/v3/validateOtp")
     Data<VerificationResponse> validateOtp(
             @RequestParam String verificationId,
             @RequestParam String code,
