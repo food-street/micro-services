@@ -40,13 +40,17 @@ public class AuthService {
         var parsedInfo = jwtManager.parseToken(identifier);
         String referenceId = parsedInfo.get("referenceId").toString();
         String phone = parsedInfo.get("phone").toString();
-        boolean isValid = otpService.validateOtp(referenceId, otp);
-        if (isValid) {
-            User user = userRepository.findByPhoneNumber(phone);
-            String token = jwtManager.createToken(user.getId(), 30, TimeUnit.DAYS);
-            return new JwtResponse(token);
+        if (!otpService.validateOtp(referenceId, otp)) {
+            throw new IllegalArgumentException("Invalid OTP");
         }
-        throw new IllegalArgumentException("Invalid OTP");
+        User user = userRepository.findByPhoneNumber(phone);
+        if (user == null) {
+            user = new User();
+            user.setPhoneNumber(phone);
+            user = userRepository.save(user);
+        }
+        String token = jwtManager.createToken(user.getId(), 30, TimeUnit.DAYS);
+        return new JwtResponse(token);
     }
 
     private String maskUserName(String name) {
