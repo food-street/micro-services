@@ -8,7 +8,7 @@ class MessageCentralClient {
     private static final SecureRandom secureRandom = new SecureRandom();
 
     static String stubSendOtp(String phone) {
-        var urlPattern = urlEqualTo("/send?countryCode=91&flowType=SMS&mobileNumber="+ phone + "&otpLength=5");
+        var urlPattern = urlEqualTo("/verification/v3/send?mobileNumber="+ phone + "&flowType=SMS&otpLength=5&countryCode=91");
         var verificationId = generateRandomId();
         var response = aResponse()
                 .withBody("{\"data\":{\"verificationId\":\"" + verificationId + "\"}}")
@@ -19,7 +19,7 @@ class MessageCentralClient {
     }
 
     static void stubValidateOtp(String verificationId, String otp) {
-        var urlPattern = urlEqualTo("/validateOtp?code=" + otp + "&verificationId=" + verificationId);
+        var urlPattern = urlEqualTo("/verification/v3/validateOtp?verificationId=" + verificationId + "&code=" + otp);
         var response = aResponse()
                 .withBody("{\"data\":{\"verificationStatus\":\"VERIFICATION_COMPLETED\"}}")
                 .withHeader("Content-Type", "application/json")

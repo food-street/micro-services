@@ -36,7 +36,7 @@ public class AuthService {
         return new OtpResponse(identifier, maskedUserName);
     }
 
-    JwtResponse validateOtp(String identifier, String otp) {
+    JwtResponse validateOtp(String otp, String identifier) {
         var parsedInfo = jwtManager.parseToken(identifier);
         String referenceId = parsedInfo.get("referenceId").toString();
         String phone = parsedInfo.get("phone").toString();
