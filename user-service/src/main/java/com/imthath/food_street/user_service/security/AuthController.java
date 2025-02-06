@@ -11,7 +11,7 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/send-otp")
-    OtpResponse sendOtp(@RequestParam String phone) {
+    OtpResponse sendOtp(@RequestParam @ValidPhoneNumber String phone) {
         return authService.sendOtp(phone);
     }
 
