@@ -9,7 +9,7 @@ import org.springframework.web.service.annotation.PostExchange;
 @Component
 interface OtpClient {
 
-    @PostExchange("/verification/v3/send")
+    @PostExchange("/send")
     Data<OtpResponse> sendOtp(
             @RequestParam String mobileNumber,
             @RequestParam String flowType,
@@ -18,7 +18,7 @@ interface OtpClient {
             @RequestHeader(TokenService.HEADER_KEY) String token
     );
 
-    @GetExchange("/verification/v3/validateOtp")
+    @GetExchange("/validateOtp")
     Data<VerificationResponse> validateOtp(
             @RequestParam String verificationId,
             @RequestParam String code,

@@ -9,7 +9,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
 class RestClientConfig {
-    final String BASE_URL = "https://cpaas.messagecentral.com";
+    final String BASE_URL = "https://cpaas.messagecentral.com/verification/v3";
 
     @Bean
     TokenClient authClient() {
