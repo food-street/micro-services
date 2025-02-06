@@ -26,7 +26,7 @@ public class JwtManager {
 
     String createToken(String subject, int duration, TimeUnit timeUnit) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + timeUnit.toSeconds(duration));
+        Date expiryDate = new Date(now.getTime() + timeUnit.toMillis(duration));
 
         return Jwts.builder()
                 .subject(subject)
@@ -38,7 +38,7 @@ public class JwtManager {
 
     public String createToken(Map<String, String> claims, int duration, TimeUnit timeUnit) {
         Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + timeUnit.toSeconds(duration));
+        Date expiryDate = new Date(now.getTime() + timeUnit.toMillis(duration));
 
         return Jwts.builder()
                 .claims(claims)
@@ -49,14 +49,10 @@ public class JwtManager {
     }
 
     Map<String, Object> parseToken(String token) {
-        var claims = Jwts.parser()
+        return Jwts.parser()
                 .verifyWith(key)
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-        if (claims.getExpiration().before(new Date())) {
-            throw new IllegalArgumentException("Token expired");
-        }
-        return claims;
     }
 }
