@@ -1,6 +1,7 @@
 package com.imthath.food_street.user_service.message_central;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -8,12 +9,15 @@ public class OtpService {
     static final String COUNTRY_CODE = "91"; // For India
     static final String FLOW_TYPE = "SMS";
     static final int OTP_LENGTH = 5;
-    
-    @Autowired
-    private OtpClient otpClient;
+
+    @Value("${MC_TOKEN}")
+    String AUTH_TOKEN;
+
+//    @Autowired
+//    private TokenService tokenService;
 
     @Autowired
-    private TokenService tokenService;
+    private OtpClient otpClient;
 
     public String sendOtp(String mobileNumber) {
         var response = otpClient.sendOtp(
@@ -21,13 +25,13 @@ public class OtpService {
                 FLOW_TYPE,
                 OTP_LENGTH,
                 COUNTRY_CODE,
-                tokenService.generateAuthToken()
+                AUTH_TOKEN
         );
         return response.data().verificationId();
     }
 
     public boolean validateOtp(String verificationId, String code) {
-        var response = otpClient.validateOtp(verificationId, code, tokenService.generateAuthToken());
+        var response = otpClient.validateOtp(verificationId, code, AUTH_TOKEN);
         return response.data().isSuccess();
     }
 }

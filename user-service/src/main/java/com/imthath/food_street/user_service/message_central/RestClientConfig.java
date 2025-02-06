@@ -10,7 +10,7 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 
 @Configuration
 class RestClientConfig {
-    @Value("${MC_BASE_URL}")
+    @Value("${mc.base.url}")
     String BASE_URL;
 
     @Bean
