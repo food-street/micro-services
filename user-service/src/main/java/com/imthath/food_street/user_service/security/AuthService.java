@@ -43,7 +43,7 @@ public class AuthService {
     JwtResponse validateOtp(String otp, String identifier) {
         TokenInfo parsedInfo = parseToken(identifier);
         if (!otpService.validateOtp(parsedInfo.referenceId(), otp)) {
-            throw new InvalidOtpException();
+            throw new InvalidOtpException(700);
         }
         User user = userRepository.findByPhoneNumber(parsedInfo.phone());
         if (user == null) {

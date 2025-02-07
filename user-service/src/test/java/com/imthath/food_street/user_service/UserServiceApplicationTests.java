@@ -3,7 +3,6 @@ package com.imthath.food_street.user_service;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
@@ -41,27 +40,25 @@ class UserServiceApplicationTests {
 	@Test
 	void validPhoneNumber() {
 		String PHONE = "1234567890";
-		String OTP = "12346";
 		var verificationId = MessageCentralClient.stubSendOtp(PHONE);
-		MessageCentralClient.stubValidateOtp(verificationId, OTP);
+		MessageCentralClient.stubValidOtp(verificationId);
 
 		var bodyJson = RestAssured
 				.given()
 				.param("phone", PHONE)
-				.header("authToken", "random-token")
 				.post("/auth/v1/send-otp")
 				.then()
 				.statusCode(201)
 				.extract()
 				.body()
 				.jsonPath();
-		var identifier = bodyJson.get("identifier");
+		var identifier = bodyJson.get("identifier").toString();
 		var maskedUserName = bodyJson.get("maskedUserName");
 
 		assert maskedUserName == null;
 
 		var token = RestAssured.given()
-				.param("otp", OTP)
+				.param("otp", MessageCentralClient.VALID_OTP)
 				.header("identifier", identifier)
 				.put("/auth/v1/validate-otp")
 				.then()
@@ -72,5 +69,48 @@ class UserServiceApplicationTests {
 				.get("token");
 
 		assert token != null;
+	}
+
+	@Test
+	void invalidJWT() {
+		RestAssured.given()
+				.param("otp", "12345")
+				.header("identifier", "12345")
+				.put("/auth/v1/validate-otp")
+				.then()
+				.statusCode(401);
+	}
+
+	@Test
+	void invalidOtp() {
+		String PHONE = "1234567890";
+		var verificationId = MessageCentralClient.stubSendOtp(PHONE);
+
+		var bodyJson = RestAssured
+				.given()
+				.param("phone", PHONE)
+				.post("/auth/v1/send-otp")
+				.then()
+				.statusCode(201)
+				.extract()
+				.body()
+				.jsonPath();
+		var identifier = bodyJson.get("identifier").toString();
+
+		testInvalidOtp(MessageCentralClient.WRONG_OTP, verificationId, identifier);
+		testInvalidOtp(MessageCentralClient.ALREADY_VERIFIED_OTP, verificationId, identifier);
+		testInvalidOtp(MessageCentralClient.EXPIRED_OTP, verificationId, identifier);
+
+	}
+
+	private void testInvalidOtp(String otp, String verificationId, String identifier) {
+		MessageCentralClient.stubInvalidOtp(verificationId, otp);
+
+		RestAssured.given()
+				.param("otp", otp)
+				.header("identifier", identifier)
+				.put("/auth/v1/validate-otp")
+				.then()
+				.statusCode(MessageCentralClient.getInvalidStatus(otp));
 	}
 }

@@ -15,7 +15,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidOtpException.class)
     ResponseEntity<GenericError> handleInvalidOtp(InvalidOtpException exception) {
-        return makeResponseEntity(HttpStatus.NOT_ACCEPTABLE, exception);
+        return ResponseEntity
+                .status(exception.getStatusCode())
+                .body(new GenericError(exception.getMessage()));
     }
 
     private ResponseEntity<GenericError> makeResponseEntity(HttpStatus status, Exception exception) {

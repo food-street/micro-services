@@ -1,5 +1,6 @@
 package com.imthath.food_street.user_service.message_central;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,7 @@ interface OtpClient {
     );
 
     @GetExchange("/verification/v3/validateOtp")
-    Data<VerificationResponse> validateOtp(
+    ResponseEntity<Data<VerificationResponse>> validateOtp(
             @RequestParam String verificationId,
             @RequestParam String code,
             @RequestHeader(TokenService.HEADER_KEY) String token
