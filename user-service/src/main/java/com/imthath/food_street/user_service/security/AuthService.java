@@ -2,7 +2,8 @@ package com.imthath.food_street.user_service.security;
 
 import com.imthath.food_street.user_service.User;
 import com.imthath.food_street.user_service.UserRepository;
-import com.imthath.food_street.user_service.error.InvalidOtpException;
+import com.imthath.food_street.user_service.error.Error;
+import com.imthath.food_street.user_service.error.GenericException;
 import com.imthath.food_street.user_service.error.InvalidTokenException;
 import com.imthath.food_street.user_service.message_central.OtpService;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -24,14 +24,17 @@ public class AuthService {
     private UserRepository userRepository;
 
     @Autowired
-    private JwtManager jwtManager;
+    private AuthTokenManager authTokenManager;
+
+    @Autowired
+    private UserTokenProvider userTokenProvider;
 
     OtpResponse sendOtp(String phone) {
         String referenceId = otpService.sendOtp(phone);
         Map<String, String> userInfo = new HashMap<>();
         userInfo.put("referenceId", referenceId);
         userInfo.put("phone", phone);
-        String identifier = jwtManager.createToken(userInfo, 2, TimeUnit.MINUTES);
+        String identifier = authTokenManager.createShortLivedToken(userInfo);
         User user = userRepository.findByPhoneNumber(phone);
         String maskedUserName = null;
         if (user != null) {
@@ -41,9 +44,9 @@ public class AuthService {
     }
 
     JwtResponse validateOtp(String otp, String identifier) {
-        TokenInfo parsedInfo = parseToken(identifier);
+        AuthTokenInfo parsedInfo = parseToken(identifier);
         if (!otpService.validateOtp(parsedInfo.referenceId(), otp)) {
-            throw new InvalidOtpException(700);
+            throw new GenericException(700, Error.INVALID_OTP);
         }
         User user = userRepository.findByPhoneNumber(parsedInfo.phone());
         if (user == null) {
@@ -51,8 +54,13 @@ public class AuthService {
             user.setPhoneNumber(parsedInfo.phone());
             user = userRepository.save(user);
         }
-        String token = jwtManager.createToken(user.getId(), 30, TimeUnit.DAYS);
-        return new JwtResponse(token);
+        try {
+            String token = userTokenProvider.createToken(user.getId());
+            return new JwtResponse(token);
+        } catch (Exception e) {
+            log.error("Failed to create token", e);
+            throw new GenericException(600, Error.INTERNAL_SETUP_ERROR);
+        }
     }
 
     private String maskUserName(String name) {
@@ -62,16 +70,16 @@ public class AuthService {
         return name.substring(0, 2) + "***" + name.substring(name.length() - 2);
     }
 
-    private TokenInfo parseToken(String token) {
+    private AuthTokenInfo parseToken(String token) {
         try {
-            var parsedInfo = jwtManager.parseToken(token);
-            return new TokenInfo(parsedInfo.get("referenceId").toString(), parsedInfo.get("phone").toString());
+            var parsedInfo = authTokenManager.parseToken(token);
+            return new AuthTokenInfo(parsedInfo.get("referenceId").toString(), parsedInfo.get("phone").toString());
         } catch (Exception e) {
             log.error("Invalid token", e);
             throw new InvalidTokenException();
         }
     }
 
-    record TokenInfo(String referenceId, String phone) {
+    record AuthTokenInfo(String referenceId, String phone) {
     }
 }

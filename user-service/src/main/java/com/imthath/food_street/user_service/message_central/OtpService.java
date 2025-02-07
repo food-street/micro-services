@@ -1,6 +1,7 @@
 package com.imthath.food_street.user_service.message_central;
 
-import com.imthath.food_street.user_service.error.InvalidOtpException;
+import com.imthath.food_street.user_service.error.Error;
+import com.imthath.food_street.user_service.error.GenericException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -35,12 +36,12 @@ public class OtpService {
     public boolean validateOtp(String verificationId, String code) {
         var response = otpClient.validateOtp(verificationId, code, AUTH_TOKEN);
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new InvalidOtpException(response.getStatusCode().value());
+            throw new GenericException(response.getStatusCode().value(), Error.INVALID_OTP);
         }
         try {
             return response.getBody().data().isSuccess();
         } catch (NullPointerException e) {
-            throw new InvalidOtpException(700);
+            throw new GenericException(700, Error.INVALID_OTP);
         }
     }
 }

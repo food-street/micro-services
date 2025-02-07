@@ -8,21 +8,16 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(InvalidTokenException.class)
-    ResponseEntity<GenericError> handleInvalidToken(InvalidTokenException exception) {
-        return makeResponseEntity(HttpStatus.UNAUTHORIZED, exception);
-    }
-
-    @ExceptionHandler(InvalidOtpException.class)
-    ResponseEntity<GenericError> handleInvalidOtp(InvalidOtpException exception) {
+    @ExceptionHandler(GenericException.class)
+    ResponseEntity<ErrorResponse> handleGenericException(GenericException exception) {
         return ResponseEntity
                 .status(exception.getStatusCode())
-                .body(new GenericError(exception.getMessage()));
+                .body(new ErrorResponse(exception.getMessage()));
     }
 
-    private ResponseEntity<GenericError> makeResponseEntity(HttpStatus status, Exception exception) {
+    private ResponseEntity<ErrorResponse> makeResponseEntity(HttpStatus status, Exception exception) {
         return ResponseEntity
                 .status(status)
-                .body(new GenericError(exception.getMessage()));
+                .body(new ErrorResponse(exception.getMessage()));
     }
 }

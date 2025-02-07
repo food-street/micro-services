@@ -1,7 +1,9 @@
 package com.imthath.food_street.user_service.error;
 
-public class InvalidTokenException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class InvalidTokenException extends GenericException {
     public InvalidTokenException() {
-        super("Invalid token");
+        super(HttpStatus.UNAUTHORIZED, Error.INVALID_TOKEN);
     }
 }
