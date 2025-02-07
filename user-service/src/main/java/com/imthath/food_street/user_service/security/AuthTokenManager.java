@@ -1,5 +1,6 @@
 package com.imthath.food_street.user_service.security;
 
+import com.imthath.food_street.user_service.helper.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -7,14 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.util.Date;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class JwtManager {
+public class AuthTokenManager {
 
-    @Value("${JWT_SECRET_SALT}")
+    @Value("${AUTH_TOKEN_SECRET}")
     private String secretKey;
 
     private SecretKey key;
@@ -24,26 +24,11 @@ public class JwtManager {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
-    String createToken(String subject, int duration, TimeUnit timeUnit) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + timeUnit.toMillis(duration));
-
-        return Jwts.builder()
-                .subject(subject)
-                .issuedAt(now)
-                .expiration(expiryDate)
-                .signWith(key)
-                .compact();
-    }
-
-    public String createToken(Map<String, String> claims, int duration, TimeUnit timeUnit) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + timeUnit.toMillis(duration));
-
+    public String createShortLivedToken(Map<String, String> claims) {
         return Jwts.builder()
                 .claims(claims)
-                .issuedAt(now)
-                .expiration(expiryDate)
+                .issuedAt(Date.now)
+                .expiration(Date.now.adding(2, TimeUnit.MINUTES))
                 .signWith(key)
                 .compact();
     }
