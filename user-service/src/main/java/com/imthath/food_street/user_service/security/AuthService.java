@@ -2,7 +2,10 @@ package com.imthath.food_street.user_service.security;
 
 import com.imthath.food_street.user_service.User;
 import com.imthath.food_street.user_service.UserRepository;
+import com.imthath.food_street.user_service.error.InvalidOtpException;
+import com.imthath.food_street.user_service.error.InvalidTokenException;
 import com.imthath.food_street.user_service.message_central.OtpService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +14,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Service
+@Slf4j
 public class AuthService {
 
     @Autowired
@@ -37,16 +41,14 @@ public class AuthService {
     }
 
     JwtResponse validateOtp(String otp, String identifier) {
-        var parsedInfo = jwtManager.parseToken(identifier);
-        String referenceId = parsedInfo.get("referenceId").toString();
-        String phone = parsedInfo.get("phone").toString();
-        if (!otpService.validateOtp(referenceId, otp)) {
-            throw new IllegalArgumentException("Invalid OTP");
+        TokenInfo parsedInfo = parseToken(identifier);
+        if (!otpService.validateOtp(parsedInfo.referenceId(), otp)) {
+            throw new InvalidOtpException();
         }
-        User user = userRepository.findByPhoneNumber(phone);
+        User user = userRepository.findByPhoneNumber(parsedInfo.phone());
         if (user == null) {
             user = new User();
-            user.setPhoneNumber(phone);
+            user.setPhoneNumber(parsedInfo.phone());
             user = userRepository.save(user);
         }
         String token = jwtManager.createToken(user.getId(), 30, TimeUnit.DAYS);
@@ -58,5 +60,18 @@ public class AuthService {
             return name.substring(0, 2) + "***";
         }
         return name.substring(0, 2) + "***" + name.substring(name.length() - 2);
+    }
+
+    private TokenInfo parseToken(String token) {
+        try {
+            var parsedInfo = jwtManager.parseToken(token);
+            return new TokenInfo(parsedInfo.get("referenceId").toString(), parsedInfo.get("phone").toString());
+        } catch (Exception e) {
+            log.error("Invalid token", e);
+            throw new InvalidTokenException();
+        }
+    }
+
+    record TokenInfo(String referenceId, String phone) {
     }
 }
