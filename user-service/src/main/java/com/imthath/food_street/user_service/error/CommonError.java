@@ -1,7 +1,8 @@
 package com.imthath.food_street.user_service.error;
 
-public enum Error {
+public enum CommonError {
     INVALID_OTP,
     INVALID_TOKEN,
-    INTERNAL_SETUP_ERROR;
+    INTERNAL_SETUP_ERROR,
+    USER_NOT_FOUND;
 }

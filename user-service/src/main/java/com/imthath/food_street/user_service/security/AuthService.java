@@ -2,7 +2,7 @@ package com.imthath.food_street.user_service.security;
 
 import com.imthath.food_street.user_service.User;
 import com.imthath.food_street.user_service.UserRepository;
-import com.imthath.food_street.user_service.error.Error;
+import com.imthath.food_street.user_service.error.CommonError;
 import com.imthath.food_street.user_service.error.GenericException;
 import com.imthath.food_street.user_service.error.InvalidTokenException;
 import com.imthath.food_street.user_service.message_central.OtpService;
@@ -46,7 +46,7 @@ public class AuthService {
     JwtResponse validateOtp(String otp, String identifier) {
         AuthTokenInfo parsedInfo = parseToken(identifier);
         if (!otpService.validateOtp(parsedInfo.referenceId(), otp)) {
-            throw new GenericException(700, Error.INVALID_OTP);
+            throw new GenericException(700, CommonError.INVALID_OTP);
         }
         User user = userRepository.findByPhoneNumber(parsedInfo.phone());
         if (user == null) {
@@ -59,7 +59,7 @@ public class AuthService {
             return new JwtResponse(token);
         } catch (Exception e) {
             log.error("Failed to create token", e);
-            throw new GenericException(600, Error.INTERNAL_SETUP_ERROR);
+            throw new GenericException(600, CommonError.INTERNAL_SETUP_ERROR);
         }
     }
 

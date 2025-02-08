@@ -6,12 +6,12 @@ import org.springframework.http.HttpStatus;
 public class GenericException extends RuntimeException {
     @Getter int statusCode;
 
-    public GenericException(int statusCode, Error error) {
+    public GenericException(int statusCode, CommonError error) {
         super(error.name());
         this.statusCode = statusCode;
     }
 
-    GenericException(HttpStatus httpStatus, Error error) {
+    public GenericException(HttpStatus httpStatus, CommonError error) {
         super(error.name());
         this.statusCode = httpStatus.value();
     }

@@ -1,6 +1,6 @@
 package com.imthath.food_street.user_service.message_central;
 
-import com.imthath.food_street.user_service.error.Error;
+import com.imthath.food_street.user_service.error.CommonError;
 import com.imthath.food_street.user_service.error.GenericException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,12 +36,12 @@ public class OtpService {
     public boolean validateOtp(String verificationId, String code) {
         var response = otpClient.validateOtp(verificationId, code, AUTH_TOKEN);
         if (response.getStatusCode() != HttpStatus.OK) {
-            throw new GenericException(response.getStatusCode().value(), Error.INVALID_OTP);
+            throw new GenericException(response.getStatusCode().value(), CommonError.INVALID_OTP);
         }
         try {
             return response.getBody().data().isSuccess();
         } catch (NullPointerException e) {
-            throw new GenericException(700, Error.INVALID_OTP);
+            throw new GenericException(700, CommonError.INVALID_OTP);
         }
     }
 }
