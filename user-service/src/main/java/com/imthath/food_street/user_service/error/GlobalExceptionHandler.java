@@ -22,6 +22,11 @@ public class GlobalExceptionHandler {
         return makeResponseEntity(HttpStatus.SERVICE_UNAVAILABLE, exception);
     }
 
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<ErrorResponse> handleException(Exception exception) {
+        return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, exception);
+    }
+
     private ResponseEntity<ErrorResponse> makeResponseEntity(HttpStatus status, Exception exception) {
         return ResponseEntity
                 .status(status)
