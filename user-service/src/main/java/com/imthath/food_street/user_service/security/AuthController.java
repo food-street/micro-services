@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/auth/v1")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
