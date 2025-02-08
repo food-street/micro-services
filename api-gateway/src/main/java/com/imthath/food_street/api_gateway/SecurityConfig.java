@@ -17,7 +17,8 @@ public class SecurityConfig  {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()
+                        .requestMatchers("/fallbackRoute", "/api-docs", "/auth/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .build();
     }
