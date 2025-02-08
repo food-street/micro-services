@@ -11,7 +11,7 @@
 	<groupId>com.imthath.food-street</groupId>
 	<artifactId>api-gateway</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>api-gateway</name>
+	<name>API Gateway</name>
 	<description>Gateway for all micro services. Starting with authentication and restricted access to the micro services..</description>
 	<url/>
 	<licenses>
@@ -43,7 +43,12 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-gateway-mvc</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>com.github.imthath-m</groupId>
+			<artifactId>gcp-auth</artifactId>
+			<version>0.1.2</version>
+		</dependency>
+		<!-- test dependencies -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -75,5 +80,10 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<repositories>
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 </project>

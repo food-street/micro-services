@@ -11,7 +11,7 @@
 	<groupId>com.imthath.food-street</groupId>
 	<artifactId>user-service</artifactId>
 	<version>0.0.1</version>
-	<name>user-service</name>
+	<name>User Service</name>
 	<description>Handle user auth and profile</description>
 	<url/>
 	<licenses>
