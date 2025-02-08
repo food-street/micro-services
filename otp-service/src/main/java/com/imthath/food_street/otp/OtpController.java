@@ -5,14 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/otp/v1")
+@RequestMapping("/otp")
 public class OtpController {
     @Autowired private OtpService otpService;
 
     @PostMapping("/generate")
     @ResponseStatus(HttpStatus.CREATED)
-    public String generateOtp(@RequestParam String identifier) {
-        return otpService.generateOtp(identifier);
+    OtpResponse generateOtp(@RequestParam String identifier) {
+        return new OtpResponse(otpService.generateOtp(identifier));
     }
 
     @PutMapping("/validate")
@@ -20,4 +20,6 @@ public class OtpController {
     public void validateOtp(@RequestParam String identifier, @RequestParam String otp) {
         otpService.validateOtp(identifier, otp);
     }
+
+    record OtpResponse(String otp) {}
 }
