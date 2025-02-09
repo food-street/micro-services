@@ -28,7 +28,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             var auth = new UsernamePasswordAuthenticationToken(info.userId(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
         } catch (Exception e) {
-            System.out.println("Unauthorized access with malformed token");
+            System.out.println("Unauthorized access with malformed token: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
         filterChain.doFilter(request, response);
