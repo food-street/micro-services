@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -55,7 +56,8 @@ public class AuthService {
             user = userRepository.save(user);
         }
         try {
-            String token = userTokenProvider.createToken(user.getId());
+            String role = Optional.ofNullable(user.getRole()).orElse("USER");
+            String token = userTokenProvider.createToken(user.getId(), role);
             return new JwtResponse(token);
         } catch (Exception e) {
             log.error("Failed to create token", e);

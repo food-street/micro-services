@@ -16,9 +16,10 @@ public class UserTokenProvider {
     @Value("${JWT_PRIVATE_KEY}")
     private String keyPem;
 
-    String createToken(String subject) throws Exception {
+    String createToken(String subject, String audience) throws Exception {
         return Jwts.builder()
                 .subject(subject)
+                .audience().add(audience).and()
                 .issuedAt(Date.now)
                 .expiration(Date.now.adding(30, TimeUnit.DAYS))
                 .signWith(decodePrivateKey(keyPem))
