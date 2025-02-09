@@ -22,4 +22,9 @@ public class AuthController {
     JwtResponse validateOtp(@RequestParam String otp, @RequestHeader("identifier") String identifier) {
         return authService.validateOtp(otp, identifier);
     }
+ 
+    //    @DeleteMapping("testing-token")
+    //    String token(@RequestParam String userId, @RequestParam String role) throws Exception {
+    //        return authService.getUserTokenProvider().createToken(userId, role);
+    //    }
 }

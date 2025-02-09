@@ -30,6 +30,10 @@ public class AuthService {
     @Autowired
     private UserTokenProvider userTokenProvider;
 
+    // UserTokenProvider getUserTokenProvider() {
+    //     return userTokenProvider;
+    // }
+
     OtpResponse sendOtp(String phone) {
         String referenceId = otpService.sendOtp(phone);
         Map<String, String> userInfo = new HashMap<>();
