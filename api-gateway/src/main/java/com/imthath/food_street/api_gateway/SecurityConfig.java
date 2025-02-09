@@ -10,6 +10,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig  {
 
+    private static final String[] PUBLIC_ENDPOINTS = {"/fallbackRoute", "/api-docs", "/auth/**", "/actuator/**"};
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         System.out.println("setting up bean for security config");
@@ -17,7 +19,7 @@ public class SecurityConfig  {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/fallbackRoute", "/api-docs", "/auth/**").permitAll()
+                        .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
                 .build();
