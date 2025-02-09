@@ -23,11 +23,10 @@ public class SecurityFilter extends OncePerRequestFilter {
         try {
             String token = request.getHeader("Authorization").replace("Bearer ", "");
             var info = tokenParser.parseToken(token);
-            // map roles to SingleGrantedAuthority
             var authorities = info.roles().stream().map(SimpleGrantedAuthority::new).toList();
             var auth = new UsernamePasswordAuthenticationToken(info.userId(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
-            System.out.println("Authentication successful for user: " + info.userId());
+            System.out.println("Updated authentication context for user: " + info.userId());
         } catch (Exception e) {
             System.out.println("Unauthorized access with malformed token: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
