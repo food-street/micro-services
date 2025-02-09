@@ -27,6 +27,7 @@ public class SecurityFilter extends OncePerRequestFilter {
             var authorities = info.roles().stream().map(SimpleGrantedAuthority::new).toList();
             var auth = new UsernamePasswordAuthenticationToken(info.userId(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
+            System.out.println("Authentication successful for user: " + info.userId());
         } catch (Exception e) {
             System.out.println("Unauthorized access with malformed token: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
