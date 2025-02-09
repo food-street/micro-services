@@ -16,10 +16,7 @@ public class UserController {
 
     @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void updateUser(@PathVariable String id, @RequestParam String name) { // , @AuthenticationPrincipal String userId) {
-//        if (!userId.equals(id)) {
-//            throw new GenericException(HttpStatus.UNAUTHORIZED, CommonError.USER_NOT_FOUND);
-//        }
+    public void updateUser(@PathVariable String id, @RequestParam String name) {
         userService.updateName(name, id);
     }
 }
