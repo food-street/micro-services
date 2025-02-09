@@ -1,4 +1,4 @@
-package com.imthath.food_street.api_gateway;
+package com.imthath.food_street.api_gateway.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
