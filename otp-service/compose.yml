@@ -1,5 +1,5 @@
 services:
-  redis:
+  otp-cache:
     image: redis
     container_name: otp-cache
     ports:

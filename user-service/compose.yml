@@ -1,7 +1,7 @@
 services:
-  mongodb:
+  user-mongodb:
     image: mongo:7.0.5
-    container_name: mongodb
+    container_name: user-mongodb
     ports:
       - "27017:27017"
     environment:
