@@ -2,7 +2,7 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Spring Boot-ApiGatewayApplication<api-gateway>",
+            "name": "API Gateway",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "com.imthath.food_street.api_gateway.ApiGatewayApplication",
@@ -13,7 +13,7 @@
         },
         {
             "type": "java",
-            "name": "Spring Boot-UserServiceApplication<user-service>",
+            "name": "User Service",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "com.imthath.food_street.user_service.UserServiceApplication",
@@ -23,11 +23,21 @@
         },
         {
             "type": "java",
-            "name": "Spring Boot-OtpServiceApplication<otp-service>",
+            "name": "Otp Service",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "mainClass": "com.imthath.food_street.otp.OtpServiceApplication",
             "projectName": "otp-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Court Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.food_street.court_service.CourtServiceApplication",
+            "projectName": "court-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }
