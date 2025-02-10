@@ -87,13 +87,13 @@ public class Routes {
                 .body("Service Unavailable, please try again later to " + method + " value");
     }
 
-    private final HandlerFilterFunction<ServerResponse, ServerResponse> customHeaderFilter(String baseUrl) {
-        return (request, next) -> {
-            var newRequest = ServerRequest
-                    .from(request)
-                    .header(Authorization.headerKey, Authorization.headerValue(baseUrl))
-                    .build();
-            return next.handle(newRequest);
-        };
-    }
+    // private final HandlerFilterFunction<ServerResponse, ServerResponse> customHeaderFilter(String baseUrl) {
+    //     return (request, next) -> {
+    //         var newRequest = ServerRequest
+    //                 .from(request)
+    //                 .header(Authorization.headerKey, Authorization.headerValue(baseUrl))
+    //                 .build();
+    //         return next.handle(newRequest);
+    //     };
+    // }
 }

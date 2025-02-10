@@ -12,9 +12,9 @@ import org.testcontainers.utility.DockerImageName;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class OtpServiceApplicationTests {
 
+	@SuppressWarnings("resource")
 	@ServiceConnection
-	static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:6.2.6"))
-			.withExposedPorts(6379);
+	static GenericContainer<?> redis = new GenericContainer<>(DockerImageName.parse("redis:6.2.6")).withExposedPorts(6379);
 
 	@LocalServerPort
 	private int port;
