@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>com.imthath.food-street</groupId>
 	<artifactId>court-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>court-service</name>
+	<version>0.0.1</version>
+	<name>Food court Service</name>
 	<description>To perform actions on Food Courts, only read is public, all other actions only by admins</description>
 	<url/>
 	<licenses>
