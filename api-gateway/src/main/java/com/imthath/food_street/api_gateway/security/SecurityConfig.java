@@ -31,8 +31,9 @@ public class SecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers("/user/**", "/court").hasRole("APP_ADMIN")
+                        .requestMatchers("/court/{id}").hasRole("FC_ADMIN")
                         .requestMatchers("/otp/validate").hasRole("R_ADMIN")
-                        .requestMatchers("/user/**").hasRole("APP_ADMIN")
                         .requestMatchers("/user/{id}/**").access((authentication, context) -> {
                             String id = context.getVariables().get("id");
                             String userId = (String) authentication.get().getPrincipal();
