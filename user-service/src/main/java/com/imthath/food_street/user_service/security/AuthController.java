@@ -23,8 +23,8 @@ public class AuthController {
         return authService.validateOtp(otp, identifier);
     }
  
-    //    @DeleteMapping("testing-token")
-    //    String token(@RequestParam String userId, @RequestParam String role) throws Exception {
-    //        return authService.getUserTokenProvider().createToken(userId, role);
-    //    }
+    @DeleteMapping("/test/sample/token")
+    String token(@RequestParam String userId, @RequestParam String role) throws Exception {
+        return authService.getUserTokenProvider().createToken(userId, role);
+    }
 }
