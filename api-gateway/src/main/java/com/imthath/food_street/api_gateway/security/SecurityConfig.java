@@ -16,7 +16,12 @@ public class SecurityConfig  {
     @Autowired
     SecurityFilter securityFilter;
 
-    private static final String[] PUBLIC_ENDPOINTS = {"/fallbackRoute", "/api-docs", "/auth/**", "/actuator/**"};
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/fallbackRoute",
+            "/api-docs",
+            "/auth/send-otp", "/auth/validate-otp",
+            "/actuator/**"
+    };
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -26,12 +31,13 @@ public class SecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/otp/validate").hasRole("ADMIN")
+                        .requestMatchers("/otp/validate").hasRole("R_ADMIN")
+                        .requestMatchers("/user/**").hasRole("APP_ADMIN")
                         .requestMatchers("/user/{id}/**").access((authentication, context) -> {
                             String id = context.getVariables().get("id");
                             String userId = (String) authentication.get().getPrincipal();
                             boolean hasUserRole = authentication.get().getAuthorities().stream()
-                                .anyMatch(a -> a.getAuthority().equals("USER"));
+                                .anyMatch(a -> a.getAuthority().equals(securityFilter.ROLE_PREFIX + "USER"));
                             return new AuthorizationDecision(id.equals(userId) && hasUserRole);
                         })
                         .anyRequest().authenticated()

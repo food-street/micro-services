@@ -18,17 +18,19 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
     TokenParser tokenParser;
 
+    final String ROLE_PREFIX = "ROLE_";
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
             String token = request.getHeader("Authorization").replace("Bearer ", "");
             var info = tokenParser.parseToken(token);
-            var authorities = info.roles().stream().map(SimpleGrantedAuthority::new).toList();
+            var authorities = info.roles().stream().map(r -> new SimpleGrantedAuthority(ROLE_PREFIX + r)).toList();
             var auth = new UsernamePasswordAuthenticationToken(info.userId(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
-            System.out.println("Updated authentication context for user: " + info.userId());
+            System.out.println("Updated authentication context for user " + info.userId() + " with roles " + info.roles());
         } catch (Exception e) {
-            System.out.println("Unauthorized access with malformed token: " + e.getMessage());
+            System.out.println("Unauthorized access with malformed token. Error: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
         filterChain.doFilter(request, response);
