@@ -4,5 +4,6 @@ public enum CommonError {
     INVALID_OTP,
     INVALID_TOKEN,
     INTERNAL_SETUP_ERROR,
-    USER_NOT_FOUND;
+    USER_NOT_FOUND,
+    USER_EXISTS;
 }

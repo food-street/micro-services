@@ -40,10 +40,10 @@ public class AuthService {
         userInfo.put("referenceId", referenceId);
         userInfo.put("phone", phone);
         String identifier = authTokenManager.createShortLivedToken(userInfo);
-        User user = userRepository.findByPhoneNumber(phone);
+        Optional<User> user = userRepository.findByPhoneNumber(phone);
         String maskedUserName = null;
-        if (user != null) {
-            maskedUserName = maskUserName(user.getName());
+        if (user.isPresent()) {
+            maskedUserName = maskUserName(user.get().getName());
         }
         return new OtpResponse(identifier, maskedUserName);
     }
@@ -53,15 +53,15 @@ public class AuthService {
         if (!otpService.validateOtp(parsedInfo.referenceId(), otp)) {
             throw new GenericException(700, CommonError.INVALID_OTP);
         }
-        User user = userRepository.findByPhoneNumber(parsedInfo.phone());
-        if (user == null) {
-            user = new User();
-            user.setPhoneNumber(parsedInfo.phone());
-            user = userRepository.save(user);
+        var user = userRepository.findByPhoneNumber(parsedInfo.phone());
+        if (user.isEmpty()) {
+            user = Optional.of(new User());
+            user.get().setPhoneNumber(parsedInfo.phone());
+            userRepository.save(user.get());
         }
         try {
-            String role = Optional.ofNullable(user.getRole()).orElse("USER");
-            String token = userTokenProvider.createToken(user.getId(), role);
+            User.Role role = user.get().getRole();
+            String token = userTokenProvider.createToken(user.get().getId(), role.toString());
             return new JwtResponse(token);
         } catch (Exception e) {
             log.error("Failed to create token", e);

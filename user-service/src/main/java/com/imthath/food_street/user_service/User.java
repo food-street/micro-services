@@ -11,5 +11,12 @@ public class User {
     private String id;
     private String name;
     private String phoneNumber;
-    private String role;
+    private Role role;
+
+    public enum Role {
+        USER,
+        APP_ADMIN,
+        R_ADMIN, R_EMP,
+        FC_ADMIN, FC_EMP
+    }
 }
