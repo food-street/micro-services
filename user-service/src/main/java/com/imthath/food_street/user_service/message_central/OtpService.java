@@ -41,7 +41,7 @@ public class OtpService {
         try {
             return response.getBody().data().isSuccess();
         } catch (NullPointerException e) {
-            throw new GenericException(700, CommonError.INVALID_OTP);
+            throw new GenericException(CommonError.INVALID_OTP);
         }
     }
 }
