@@ -1,25 +1,27 @@
 package com.imthath.food_street.user_service.error;
 
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
-@Getter
 public class GenericException extends RuntimeException {
-    int statusCode;
+    private final int code;
 
     public GenericException(int statusCode, UserServiceError error) {
         super(error.name());
-        this.statusCode = statusCode;
+        this.code = statusCode;
     }
 
     public GenericException(UserServiceError error) {
         super(error.name());
-        this.statusCode = error.getCode();
+        this.code = error.getCode();
     }
 
     public GenericException(HttpStatus httpStatus, UserServiceError error) {
         super(error.name());
-        this.statusCode = httpStatus.value();
+        this.code = httpStatus.value();
+    }
+
+    public int getCode() {
+        return code;
     }
 }
 

@@ -1,18 +1,15 @@
 package com.imthath.food_street.user_service.error;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.nio.channels.UnresolvedAddressException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler(GenericException.class)
     public ResponseEntity<ErrorResponse> handleGenericException(GenericException exception) {
         return ResponseEntity
-                .status(exception.getStatusCode())
+                .status(exception.getCode())
                 .body(new ErrorResponse(exception.getMessage()));
     }
 
