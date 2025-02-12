@@ -3,7 +3,7 @@ package com.imthath.food_street.user_service.error;
 import lombok.Getter;
 
 @Getter
-public enum CommonError {
+public enum UserServiceError {
     INVALID_OTP(1000),
     INVALID_TOKEN(1001),
     INTERNAL_SETUP_ERROR(1002),
@@ -12,7 +12,7 @@ public enum CommonError {
 
     private final int code;
 
-    CommonError(int code) {
+    UserServiceError(int code) {
         this.code = code;
     }
 }
