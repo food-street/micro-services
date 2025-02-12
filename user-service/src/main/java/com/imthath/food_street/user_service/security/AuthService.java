@@ -4,7 +4,6 @@ import com.imthath.food_street.user_service.User;
 import com.imthath.food_street.user_service.UserRepository;
 import com.imthath.food_street.user_service.error.UserServiceError;
 import com.imthath.food_street.user_service.error.GenericException;
-import com.imthath.food_street.user_service.error.InvalidTokenException;
 import com.imthath.food_street.user_service.message_central.OtpService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class AuthService {
             return new AuthTokenInfo(parsedInfo.get("referenceId").toString(), parsedInfo.get("phone").toString());
         } catch (Exception e) {
             log.error("Invalid token", e);
-            throw new InvalidTokenException();
+            throw new GenericException(UserServiceError.INVALID_TOKEN);
         }
     }
 

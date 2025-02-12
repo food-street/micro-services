@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum UserServiceError {
     INVALID_OTP(1000),
-    INVALID_TOKEN(1001),
+    INVALID_TOKEN(401),
     INTERNAL_SETUP_ERROR(1002),
     USER_NOT_FOUND(1003),
     USER_EXISTS(1004);

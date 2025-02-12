@@ -9,17 +9,11 @@ import java.nio.channels.UnresolvedAddressException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
     @ExceptionHandler(GenericException.class)
-    ResponseEntity<ErrorResponse> handleGenericException(GenericException exception) {
+    public ResponseEntity<ErrorResponse> handleGenericException(GenericException exception) {
         return ResponseEntity
                 .status(exception.getStatusCode())
                 .body(new ErrorResponse(exception.getMessage()));
-    }
-
-    @ExceptionHandler(UnresolvedAddressException.class)
-    ResponseEntity<ErrorResponse> handleUnresolvedAddressException(UnresolvedAddressException exception) {
-        return makeResponseEntity(HttpStatus.SERVICE_UNAVAILABLE, exception);
     }
 
     // handles all exceptions like bad request. not ideal.
@@ -28,7 +22,7 @@ public class GlobalExceptionHandler {
 //        return makeResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, exception);
 //    }
 
-    private ResponseEntity<ErrorResponse> makeResponseEntity(HttpStatus status, Exception exception) {
+    public ResponseEntity<ErrorResponse> makeResponseEntity(int status, Exception exception) {
         return ResponseEntity
                 .status(status)
                 .body(new ErrorResponse(exception.getMessage()));
