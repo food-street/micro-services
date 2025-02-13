@@ -1,7 +1,7 @@
 package com.imthath.food_street.user_service.message_central;
 
 import com.imthath.food_street.user_service.error.UserServiceError;
-import com.imthath.food_street.user_service.error.GenericException;
+import com.imthath.utils.guardrail.GenericException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

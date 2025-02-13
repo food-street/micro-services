@@ -1,5 +1,6 @@
 package com.imthath.food_street.user_service.error;
 
+import com.imthath.utils.guardrail.CommonError;
 import lombok.Getter;
 
 @Getter

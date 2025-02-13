@@ -1,7 +1,7 @@
-package com.imthath.food_street.user_service;
+package com.imthath.food_street.user_service.error;
 
-import com.imthath.food_street.user_service.error.ErrorResponse;
-import com.imthath.food_street.user_service.error.GlobalExceptionHandler;
+import com.imthath.utils.guardrail.ErrorResponse;
+import com.imthath.utils.guardrail.GlobalExceptionHandler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
