@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 public enum CourtError implements CommonError {
-    COURT_NOT_FOUND(1001);
+    COURT_NOT_FOUND(901);
 
     private final int code;
 
