@@ -26,13 +26,13 @@ class UserServiceApplicationTests {
 	void invalidPhoneNumbers() {
 		RestAssured.given()
 				.param("phone", "123")
-				.post("/auth/v1/send-otp")
+				.post("/auth/send-otp")
 				.then()
 				.statusCode(400);
 
 		RestAssured.given()
 				.param("phone", "testing")
-				.post("/auth/v1/send-otp")
+				.post("/auth/send-otp")
 				.then()
 				.statusCode(400);
 	}
@@ -46,7 +46,7 @@ class UserServiceApplicationTests {
 		var bodyJson = RestAssured
 				.given()
 				.param("phone", PHONE)
-				.post("/auth/v1/send-otp")
+				.post("/auth/send-otp")
 				.then()
 				.statusCode(201)
 				.extract()
@@ -60,7 +60,7 @@ class UserServiceApplicationTests {
 		var token = RestAssured.given()
 				.param("otp", MessageCentralClient.VALID_OTP)
 				.header("identifier", identifier)
-				.put("/auth/v1/validate-otp")
+				.put("/auth/validate-otp")
 				.then()
 				.statusCode(202)
 				.extract()
@@ -76,7 +76,7 @@ class UserServiceApplicationTests {
 		RestAssured.given()
 				.param("otp", "12345")
 				.header("identifier", "12345")
-				.put("/auth/v1/validate-otp")
+				.put("/auth/validate-otp")
 				.then()
 				.statusCode(401);
 	}
@@ -89,7 +89,7 @@ class UserServiceApplicationTests {
 		var bodyJson = RestAssured
 				.given()
 				.param("phone", PHONE)
-				.post("/auth/v1/send-otp")
+				.post("/auth/send-otp")
 				.then()
 				.statusCode(201)
 				.extract()
@@ -109,7 +109,7 @@ class UserServiceApplicationTests {
 		RestAssured.given()
 				.param("otp", otp)
 				.header("identifier", identifier)
-				.put("/auth/v1/validate-otp")
+				.put("/auth/validate-otp")
 				.then()
 				.statusCode(MessageCentralClient.getInvalidStatus(otp));
 	}

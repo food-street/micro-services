@@ -1,6 +1,8 @@
 package com.imthath.food_street.court_service;
 
 import com.imthath.food_street.court_service.dto.CourtRequest;
+import com.imthath.food_street.court_service.error.CourtError;
+import com.imthath.utils.guardrail.GenericException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +13,6 @@ import java.util.Optional;
 public class CourtService {
     @Autowired
     CourtRepository courtRepository;
-
-    Optional<Court> getCourt(Long id) {
-        return courtRepository.findById(id);
-    }
 
     public Court createCourt(CourtRequest request) {
         Court court = new Court();
@@ -32,7 +30,7 @@ public class CourtService {
 
     public Court getCourtById(Long id) throws Exception{
         return courtRepository.findById(id)
-                .orElseThrow(() -> new Exception("Court not found with id: " + id));
+                .orElseThrow(() -> new GenericException(CourtError.COURT_NOT_FOUND));
     }
 
     public Court updateCourt(Long id, CourtRequest request) throws Exception {

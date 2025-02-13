@@ -56,6 +56,7 @@ public class AuthService {
         if (user.isEmpty()) {
             user = Optional.of(new User());
             user.get().setPhoneNumber(parsedInfo.phone());
+            user.get().setRole(User.Role.USER);
             userRepository.save(user.get());
         }
         try {
