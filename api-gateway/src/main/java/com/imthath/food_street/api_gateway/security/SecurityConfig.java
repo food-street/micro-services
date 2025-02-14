@@ -31,16 +31,23 @@ public class SecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                        .requestMatchers("/user/**", "/court").hasRole("APP_ADMIN")
-                        .requestMatchers("/court/{id}").hasRole("FC_ADMIN")
+                        .requestMatchers("/court/{id}").access((authentication, context) -> {
+                            String id = context.getVariables().get("id");
+                            UserAuthentication userAuth = (UserAuthentication) authentication.get();
+                            return new AuthorizationDecision(
+                                id.equals(userAuth.entityId) && context.getRequest().isUserInRole("FC_ADMIN")
+                            );
+                        })
                         .requestMatchers("/otp/validate").hasRole("R_ADMIN")
                         .requestMatchers("/user/{id}/**").access((authentication, context) -> {
                             String id = context.getVariables().get("id");
                             String userId = (String) authentication.get().getPrincipal();
-                            boolean hasUserRole = authentication.get().getAuthorities().stream()
-                                .anyMatch(a -> a.getAuthority().equals(securityFilter.ROLE_PREFIX + "USER"));
-                            return new AuthorizationDecision(id.equals(userId) && hasUserRole);
+                            System.out.println("Checking user id matching in auth context and request path");
+                            return new AuthorizationDecision(
+                                id.equals(userId) && context.getRequest().isUserInRole("USER")
+                            );
                         })
+                        .requestMatchers("/user/**", "/court").hasRole("APP_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
