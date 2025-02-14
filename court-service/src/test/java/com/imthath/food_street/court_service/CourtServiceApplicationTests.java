@@ -16,9 +16,8 @@ import static org.hamcrest.Matchers.*;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CourtServiceApplicationTests {
 
-	@SuppressWarnings("resource")
 	@ServiceConnection
-	static MySQLContainer<?> mysql = new MySQLContainer<>(DockerImageName.parse("mysql:8.0.26"));
+	static MySQLContainer<?> mysqlContainer = new MySQLContainer<>("mysql:8.3.0");
 
 	@LocalServerPort
 	private int port;

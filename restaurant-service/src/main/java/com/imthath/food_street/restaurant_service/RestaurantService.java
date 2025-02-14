@@ -65,7 +65,7 @@ public class RestaurantService {
 
     private void verifyCourtExists(Long courtId) throws Exception {
         try {
-            restTemplate.getForObject("http://court-service:8083/court/" + courtId, Object.class);
+            restTemplate.getForObject("http://localhost:8083/court/" + courtId, Object.class);
         } catch (Exception e) {
             throw new GenericException(RestaurantError.COURT_NOT_FOUND);
         }
