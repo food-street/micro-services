@@ -18,18 +18,18 @@ public class Routes {
     String AUTH = "auth";
     String OTP = "otp";
     String CART = "cart";
+    String COURT = "court";
 
     @Value("${user.service.url}") private String userServiceUrl;
     @Value("${otp.service.url}") private String otpServiceUrl;
     @Value("${cart.service.url}") private String cartServiceUrl;
+    @Value("${court.service.url}") private String courtServiceUrl;
 
-    @Bean
-    public RouterFunction<ServerResponse> userRoute() {
+    @Bean RouterFunction<ServerResponse> userRoute() {
         return buildServiceRoute(USER, userServiceUrl);
     }
 
-    @Bean
-    public RouterFunction<ServerResponse> authRoute() {
+    @Bean RouterFunction<ServerResponse> authRoute() {
         return buildServiceRoute(AUTH, userServiceUrl);
     }
 
@@ -39,6 +39,10 @@ public class Routes {
 
     @Bean RouterFunction<ServerResponse> cartRoute() {
         return buildServiceRoute(CART, cartServiceUrl);
+    }
+
+    @Bean RouterFunction<ServerResponse> courtRoute() {
+        return buildServiceRoute(COURT, courtServiceUrl);
     }
 
     @Bean
