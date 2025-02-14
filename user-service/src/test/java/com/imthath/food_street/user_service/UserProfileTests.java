@@ -59,6 +59,14 @@ public class UserProfileTests {
                 "John Doe",
                 User.Role.USER
         );
+        createUser(request);
+        given()
+                .contentType(ContentType.JSON)
+                .body(request)
+                .when()
+                .post("/user")
+                .then()
+                .statusCode(UserServiceError.USER_EXISTS.getCode());
     }
 
     @Test
@@ -75,7 +83,7 @@ public class UserProfileTests {
                 .body("size()", equalTo(2))
                 .body("name", hasItems("John Doe", "Jane Doe"))
                 .body("phoneNumber", hasItems("9876543210", "9876543211"))
-                .body("role", hasItems("USER", "R_ADMIN"));
+                .body("role", hasItems(User.Role.USER.name(), User.Role.R_ADMIN.name()));
     }
 
     @Test
@@ -126,6 +134,10 @@ public class UserProfileTests {
 
     private Response createUser(String phone, String name, User.Role role) {
         var request = new UserController.UserRequest(phone, name, role);
+        return createUser(request);
+    }
+
+    private Response createUser(UserController.UserRequest request) {
         var response = given()
                 .contentType(ContentType.JSON)
                 .body(request)
