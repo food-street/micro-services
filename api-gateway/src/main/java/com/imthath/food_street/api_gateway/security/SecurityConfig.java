@@ -35,22 +35,29 @@ public class SecurityConfig  {
                             String id = context.getVariables().get("id");
                             UserAuthentication userAuth = (UserAuthentication) authentication.get();
                             return new AuthorizationDecision(
-                                id.equals(userAuth.entityId) && context.getRequest().isUserInRole("FC_ADMIN")
+                                id.equals(userAuth.entityId) && context.getRequest().isUserInRole(Role.FC_ADMIN.name())
                             );
                         })
-                        .requestMatchers("/otp/validate").hasRole("R_ADMIN")
+                        .requestMatchers("/otp/validate").hasRole(Role.R_ADMIN.name())
                         .requestMatchers("/user/{id}/**").access((authentication, context) -> {
                             String id = context.getVariables().get("id");
                             String userId = (String) authentication.get().getPrincipal();
                             System.out.println("Checking user id matching in auth context and request path");
                             return new AuthorizationDecision(
-                                id.equals(userId) && context.getRequest().isUserInRole("USER")
+                                id.equals(userId) && context.getRequest().isUserInRole(Role.USER.name())
                             );
                         })
-                        .requestMatchers("/user/**", "/court").hasRole("APP_ADMIN")
+                        .requestMatchers("/user/**", "/court").hasRole(Role.APP_ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
+    }
+
+    enum Role {
+        USER,
+        APP_ADMIN,
+        R_ADMIN, R_EMP,
+        FC_ADMIN, FC_EMP
     }
 }
