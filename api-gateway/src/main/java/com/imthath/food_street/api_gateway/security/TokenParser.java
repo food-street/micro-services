@@ -8,6 +8,7 @@ import java.security.KeyFactory;
 import java.security.PublicKey;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
+import java.util.Optional;
 
 @Component
 public class TokenParser {
@@ -19,7 +20,13 @@ public class TokenParser {
                 .verifyWith(decodePublicKey(keyPem))
                 .build()
                 .parseSignedClaims(token).getPayload();
-        return new TokenInfo(claims.getSubject(), claims.getAudience());
+        Optional<String> entityId = Optional.empty();
+        try {
+            entityId = Optional.of(claims.getIssuer());
+        } catch (Exception e) {
+            System.out.println("Issuer not found " + e.getMessage());
+        }
+        return new TokenInfo(claims.getSubject(), claims.getAudience(), entityId);
     }
 
     private PublicKey decodePublicKey(String publicKeyPem) throws Exception {

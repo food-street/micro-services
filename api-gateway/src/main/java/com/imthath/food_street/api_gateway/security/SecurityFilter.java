@@ -29,10 +29,13 @@ public class SecurityFilter extends OncePerRequestFilter {
             var auth = new UsernamePasswordAuthenticationToken(info.userId(), null, authorities);
             SecurityContextHolder.getContext().setAuthentication(auth);
             System.out.println("Updated authentication context for user " + info.userId() + " with roles " + info.roles());
+            if (info.entityId().isPresent()) {
+                System.out.println("Authorized by entity " + info.entityId().get());
+            }
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             System.out.println("Unauthorized access with malformed token. Error: " + e.getMessage());
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-        filterChain.doFilter(request, response);
     }
 }
