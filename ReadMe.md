@@ -14,7 +14,12 @@ Similarly, setup other properties required for the same from secret manager.
 ### Potential Names
 Looking for names which have `.com` domain available. Not interested in two words or english names, and most of those domains are not available anyways.
 Options,
+- Kalaree
 - Virunth
+- Orutha
+- Oruthat
+- Nelvali
+- NelKol
 - Kadaila
 - Magizhu
 - Vaaimai
