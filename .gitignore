@@ -10,3 +10,4 @@
 */data/
 **/application-local.properties
 **/target
+**/service-account-key.json
