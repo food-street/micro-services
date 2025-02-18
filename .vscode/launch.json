@@ -40,6 +40,16 @@
             "projectName": "court-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Image Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.food_street.image_service.ImageServiceApplication",
+            "projectName": "image-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }

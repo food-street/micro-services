@@ -6,5 +6,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public record StorageProperties(
     String bucketName,
     String host,
-    long signedUrlExpirationSeconds
+    long signedUrlExpirationMinutes
 ) {} 
