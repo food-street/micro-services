@@ -9,17 +9,6 @@ import java.net.ConnectException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-
-//    @ExceptionHandler(InvalidOtpException.class)
-//    public ResponseEntity<String> handleNullPointerException(InvalidOtpException exception) {
-//        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-//    }
-
-//    @ExceptionHandler(InvalidOtpException.class)
-//    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-//    public void handleNullPointerException() {
-//    }
-
     @ExceptionHandler(InvalidOtpException.class)
     public ResponseEntity<ErrorResponse> handleInvalidOtp(InvalidOtpException exception) {
         return makeResponseEntity(HttpStatus.CONFLICT, exception);

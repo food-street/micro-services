@@ -12,6 +12,7 @@ import org.testcontainers.utility.DockerImageName;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
+@SuppressWarnings("TrailingWhitespacesInTextBlock")
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RestaurantServiceApplicationTests {

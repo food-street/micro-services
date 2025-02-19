@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@SuppressWarnings("NullableProblems")
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
@@ -21,7 +22,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     final String ROLE_PREFIX = "ROLE_";
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
         try {
             String token = request.getHeader("Authorization").replace("Bearer ", "");
             var info = tokenParser.parseToken(token);

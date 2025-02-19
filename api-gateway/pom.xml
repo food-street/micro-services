@@ -12,7 +12,7 @@
 	<artifactId>api-gateway</artifactId>
 	<version>0.0.1</version>
 	<name>API Gateway</name>
-	<description>Gateway for all micro services. Starting with authentication and restricted access to the micro services..</description>
+	<description>Gateway for all microservices. Starting with authentication and restricted access to the microservices..</description>
 	<url/>
 	<licenses>
 		<license/>

@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class OtpService {
     static final String COUNTRY_CODE = "91"; // For India
@@ -39,7 +41,7 @@ public class OtpService {
             throw new GenericException(response.getStatusCode().value(), UserServiceError.INVALID_OTP);
         }
         try {
-            return response.getBody().data().isSuccess();
+            return Objects.requireNonNull(response.getBody()).data().isSuccess();
         } catch (NullPointerException e) {
             throw new GenericException(UserServiceError.INVALID_OTP);
         }

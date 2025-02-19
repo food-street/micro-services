@@ -7,13 +7,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.3</version>
+        <version>3.4.2</version>
         <relativePath/>
     </parent>
 
     <groupId>com.imthath.food_street</groupId>
     <artifactId>image-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>image-service</name>
     <description>Image Service for Food Street</description>
 

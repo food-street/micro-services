@@ -1,6 +1,5 @@
 package com.imthath.food_street.api_gateway;
 
-import com.imthath.utils.gcp.auth.Authorization;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
 import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
@@ -14,11 +13,11 @@ import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouter
 
 @Configuration
 public class Routes {
-    String USER = "user";
-    String AUTH = "auth";
-    String OTP = "otp";
-    String CART = "cart";
-    String COURT = "court";
+    final String USER = "user";
+    final String AUTH = "auth";
+    final String OTP = "otp";
+    final String CART = "cart";
+    final String COURT = "court";
 
     @Value("${user.service.url}") private String userServiceUrl;
     @Value("${otp.service.url}") private String otpServiceUrl;
@@ -91,13 +90,13 @@ public class Routes {
                 .body("Service Unavailable, please try again later to " + method + " value");
     }
 
-    // private final HandlerFilterFunction<ServerResponse, ServerResponse> customHeaderFilter(String baseUrl) {
-    //     return (request, next) -> {
-    //         var newRequest = ServerRequest
-    //                 .from(request)
-    //                 .header(Authorization.headerKey, Authorization.headerValue(baseUrl))
-    //                 .build();
-    //         return next.handle(newRequest);
-    //     };
-    // }
+//     private final HandlerFilterFunction<ServerResponse, ServerResponse> customHeaderFilter(String baseUrl) {
+//         return (request, next) -> {
+//             var newRequest = ServerRequest
+//                     .from(request)
+//                     .header(Authorization.headerKey, Authorization.headerValue(baseUrl))
+//                     .build();
+//             return next.handle(newRequest);
+//         };
+//     }
 }

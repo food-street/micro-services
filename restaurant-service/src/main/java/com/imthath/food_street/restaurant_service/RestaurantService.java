@@ -41,7 +41,7 @@ public class RestaurantService {
         return restaurantRepository.findByCourtId(courtId);
     }
 
-    public Restaurant getRestaurantById(Long id) throws Exception {
+    public Restaurant getRestaurantById(Long id) {
         return restaurantRepository.findById(id)
                 .orElseThrow(() -> new GenericException(RestaurantError.RESTAURANT_NOT_FOUND));
     }
@@ -63,7 +63,7 @@ public class RestaurantService {
         restaurantRepository.delete(restaurant);
     }
 
-    private void verifyCourtExists(Long courtId) throws Exception {
+    private void verifyCourtExists(Long courtId) {
         try {
             restTemplate.getForObject("http://localhost:8083/court/" + courtId, Object.class);
         } catch (Exception e) {
