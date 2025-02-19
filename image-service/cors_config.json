@@ -1,0 +1,8 @@
+[
+    {
+      "origin": ["https://react-frontend-475812897571.asia-south1.run.app", "http://localhost:5173"],
+      "method": ["GET", "PUT"],
+      "responseHeader": ["Content-Type"],
+      "maxAgeSeconds": 3600
+    }
+]
