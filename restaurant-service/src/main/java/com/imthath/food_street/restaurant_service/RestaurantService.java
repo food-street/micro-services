@@ -50,14 +50,11 @@ public class RestaurantService {
 
     public Restaurant updateRestaurant(Long id, RestaurantRequest request) throws Exception {
         Restaurant restaurant = getRestaurantById(id);
-        if (request.courtId() != null) {
-            verifyCourtExists(request.courtId());
-        }
+        // Court ID should not be updated after creation
 
         restaurant.setName(request.name());
         restaurant.setDescription(request.description());
         restaurant.setImageUrl(request.imageUrl());
-        restaurant.setCourtId(request.courtId());
         restaurant.setUpdatedAt(Instant.now());
         return restaurantRepository.save(restaurant);
     }
