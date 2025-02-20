@@ -1,6 +1,6 @@
 
 ## High Level Design
-![image](/resources/architechture.svg)
+![image](/resources/architechture.png)
 
 ### Tech Stack
 Spring boot microservices with Java, MySQL, MongoDB, Redis cache, Kafka as Message Queue and Web Sockets for sending notifications to clients.
