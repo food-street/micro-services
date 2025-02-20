@@ -49,4 +49,9 @@ public class CourtController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkCourtExists(@RequestParam Long id) {
+        boolean exists = courtService.existsById(id);
+        return ResponseEntity.ok(exists);
+    }
 }

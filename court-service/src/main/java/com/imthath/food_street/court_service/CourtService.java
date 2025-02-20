@@ -42,4 +42,8 @@ public class CourtService {
         Court court = getCourtById(id);
         courtRepository.delete(court);
     }
+
+    public boolean existsById(Long id) {
+        return courtRepository.existsById(id);
+    }
 }

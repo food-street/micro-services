@@ -97,6 +97,26 @@ class CourtServiceApplicationTests {
 				.statusCode(901);
 	}
 
+	@Test
+	void checkExistingCourt() {
+		var courtId = createSampleCourt();
+
+		given()
+				.get("/court/check?id={id}", courtId)
+				.then()
+				.statusCode(200)
+				.body(equalTo("true"));
+	}
+
+	@Test
+	void checkMissingCourt() {
+		given()
+				.get("/court/check?id={id}", 999999)
+				.then()
+				.statusCode(200)
+				.body(equalTo("false"));
+	}
+
 	private Integer createSampleCourt() {
 		return given()
 				.contentType("application/json")
