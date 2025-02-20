@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
@@ -15,20 +16,28 @@ import static org.hamcrest.Matchers.*;
 @SuppressWarnings("TrailingWhitespacesInTextBlock")
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWireMock(port = 0)
 class RestaurantServiceApplicationTests {
 
     @ServiceConnection
-    static MySQLContainer<?> mysql = new MySQLContainer<>(DockerImageName.parse("mysql:8.0.26"));
+    static MySQLContainer<?> mysql = new MySQLContainer<>(DockerImageName.parse("mysql:8.3.0"));
 
     @LocalServerPort
     private int port;
 
-    private final Integer sampleCourtId = 1; // We'll assume this court exists for testing
+    private final Long VALID_COURT_ID = 1L;
+    private final Long INVALID_COURT_ID = 999L;
+    private final Long ERROR_COURT_ID = 500L;
 
     @BeforeEach
     void setUp() {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
+        
+        // Setup court service stubs
+        CourtServiceClient.stubCourtExists(VALID_COURT_ID);
+        CourtServiceClient.stubCourtNotExists(INVALID_COURT_ID);
+        CourtServiceClient.stubCourtServiceError(ERROR_COURT_ID);
     }
 
     @Test
@@ -40,7 +49,7 @@ class RestaurantServiceApplicationTests {
                         "name": "Test Restaurant",
                         "description": "Test Description",
                         "imageUrl": "http://example.com/image.jpg",
-                        "courtId": """ + sampleCourtId + """
+                        "courtId": """ + VALID_COURT_ID + """
                     }
                     """)
                 .post("/restaurant")
@@ -50,7 +59,7 @@ class RestaurantServiceApplicationTests {
                 .body("name", equalTo("Test Restaurant"))
                 .body("description", equalTo("Test Description"))
                 .body("imageUrl", equalTo("http://example.com/image.jpg"))
-                .body("courtId", equalTo(sampleCourtId));
+                .body("courtId", equalTo(VALID_COURT_ID.intValue()));
     }
 
     @Test
@@ -77,7 +86,7 @@ class RestaurantServiceApplicationTests {
                 .body("name", equalTo("Test Restaurant"))
                 .body("description", equalTo("Test Description"))
                 .body("imageUrl", equalTo("http://example.com/image.jpg"))
-                .body("courtId", equalTo(sampleCourtId));
+                .body("courtId", equalTo(VALID_COURT_ID.intValue()));
     }
 
     @Test
@@ -86,7 +95,7 @@ class RestaurantServiceApplicationTests {
         createSampleRestaurant();
 
         given()
-                .get("/restaurant/court/{courtId}", sampleCourtId)
+                .get("/restaurant/court/{courtId}", VALID_COURT_ID)
                 .then()
                 .statusCode(200)
                 .body("size()", greaterThanOrEqualTo(2));
@@ -103,7 +112,7 @@ class RestaurantServiceApplicationTests {
                         "name": "Updated Restaurant",
                         "description": "Updated Description",
                         "imageUrl": "http://example.com/updated_image.jpg",
-                        "courtId": """ + sampleCourtId + """
+                        "courtId": """ + VALID_COURT_ID + """
                     }
                     """)
                 .put("/restaurant/{id}", restaurantId)
@@ -113,7 +122,7 @@ class RestaurantServiceApplicationTests {
                 .body("name", equalTo("Updated Restaurant"))
                 .body("description", equalTo("Updated Description"))
                 .body("imageUrl", equalTo("http://example.com/updated_image.jpg"))
-                .body("courtId", equalTo(sampleCourtId));
+                .body("courtId", equalTo(VALID_COURT_ID.intValue()));
     }
 
     @Test
@@ -140,7 +149,7 @@ class RestaurantServiceApplicationTests {
                         "name": "Test Restaurant",
                         "description": "Test Description",
                         "imageUrl": "http://example.com/image.jpg",
-                        "courtId": 99999
+                        "courtId": """ + INVALID_COURT_ID + """
                     }
                     """)
                 .post("/restaurant")
@@ -192,6 +201,23 @@ class RestaurantServiceApplicationTests {
                 .body("courtId", nullValue());
     }
 
+    @Test
+    void createRestaurantWithCourtServiceError() {
+        given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Test Restaurant",
+                        "description": "Test Description",
+                        "imageUrl": "http://example.com/image.jpg",
+                        "courtId": """ + ERROR_COURT_ID + """
+                    }
+                    """)
+                .post("/restaurant")
+                .then()
+                .statusCode(901); // COURT_NOT_FOUND error code
+    }
+
     private Integer createSampleRestaurant() {
         return given()
                 .contentType("application/json")
@@ -200,7 +226,7 @@ class RestaurantServiceApplicationTests {
                         "name": "Test Restaurant",
                         "description": "Test Description",
                         "imageUrl": "http://example.com/image.jpg",
-                        "courtId": """ + sampleCourtId + """
+                        "courtId": """ + VALID_COURT_ID + """
                     }
                     """)
                 .post("/restaurant")
