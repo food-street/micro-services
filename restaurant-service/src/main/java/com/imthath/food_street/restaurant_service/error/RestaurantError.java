@@ -5,8 +5,9 @@ import lombok.Getter;
 
 @Getter
 public enum RestaurantError implements CommonError {
+    COURT_NOT_FOUND(901),
     RESTAURANT_NOT_FOUND(902),
-    COURT_NOT_FOUND(901);
+    COURT_ID_MISMATCH(903);
 
     private final int code;
 

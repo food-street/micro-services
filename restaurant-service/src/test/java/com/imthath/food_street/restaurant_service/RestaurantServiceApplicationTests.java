@@ -193,12 +193,7 @@ class RestaurantServiceApplicationTests {
                     """)
                 .put("/restaurant/{id}", restaurantId)
                 .then()
-                .statusCode(200)
-                .body("id", equalTo(restaurantId))
-                .body("name", equalTo("Updated Restaurant"))
-                .body("description", equalTo("Updated Description"))
-                .body("imageUrl", equalTo("http://example.com/updated_image.jpg"))
-                .body("courtId", nullValue());
+                .statusCode(903); // COURT_ID_MISMATCH error code
     }
 
     @Test
@@ -218,6 +213,93 @@ class RestaurantServiceApplicationTests {
                 .statusCode(901); // COURT_NOT_FOUND error code
     }
 
+    @Test
+    void updateRestaurantWithMatchingCourtId() {
+        var restaurantId = createSampleRestaurant();
+
+        given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Updated Restaurant",
+                        "description": "Updated Description",
+                        "imageUrl": "http://example.com/updated_image.jpg",
+                        "courtId": """ + VALID_COURT_ID + """
+                    }
+                    """)
+                .put("/restaurant/{id}", restaurantId)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(restaurantId))
+                .body("name", equalTo("Updated Restaurant"))
+                .body("description", equalTo("Updated Description"))
+                .body("imageUrl", equalTo("http://example.com/updated_image.jpg"))
+                .body("courtId", equalTo(VALID_COURT_ID.intValue()));
+    }
+
+    @Test
+    void updateRestaurantWithDifferentCourtId() {
+        var restaurantId = createSampleRestaurant();
+
+        given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Updated Restaurant",
+                        "description": "Updated Description",
+                        "imageUrl": "http://example.com/updated_image.jpg",
+                        "courtId": """ + INVALID_COURT_ID + """
+                    }
+                    """)
+                .put("/restaurant/{id}", restaurantId)
+                .then()
+                .statusCode(903); // COURT_ID_MISMATCH error code
+    }
+
+    @Test
+    void updateRestaurantWithNullCourtIdWhenNoneExists() {
+        var restaurantId = createRestaurantWithoutCourt();
+
+        // First, update to remove the courtId
+        given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Updated Restaurant",
+                        "description": "Updated Description",
+                        "imageUrl": "http://example.com/updated_image.jpg",
+                        "courtId": null
+                    }
+                    """)
+                .put("/restaurant/{id}", restaurantId)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(restaurantId))
+                .body("name", equalTo("Updated Restaurant"))
+                .body("description", equalTo("Updated Description"))
+                .body("imageUrl", equalTo("http://example.com/updated_image.jpg"))
+                .body("courtId", nullValue());
+    }
+
+    @Test
+    void updateRestaurantWithNullCourtIdWhenExists() {
+        var restaurantId = createSampleRestaurant();
+
+        given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Updated Restaurant",
+                        "description": "Updated Description",
+                        "imageUrl": "http://example.com/updated_image.jpg",
+                        "courtId": null
+                    }
+                    """)
+                .put("/restaurant/{id}", restaurantId)
+                .then()
+                .statusCode(903); // COURT_ID_MISMATCH error code
+    }
+
     private Integer createSampleRestaurant() {
         return given()
                 .contentType("application/json")
@@ -227,6 +309,23 @@ class RestaurantServiceApplicationTests {
                         "description": "Test Description",
                         "imageUrl": "http://example.com/image.jpg",
                         "courtId": """ + VALID_COURT_ID + """
+                    }
+                    """)
+                .post("/restaurant")
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+    }
+
+    private Integer createRestaurantWithoutCourt() {
+        return given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Test Restaurant",
+                        "description": "Test Description",
+                        "imageUrl": "http://example.com/image.jpg"
                     }
                     """)
                 .post("/restaurant")

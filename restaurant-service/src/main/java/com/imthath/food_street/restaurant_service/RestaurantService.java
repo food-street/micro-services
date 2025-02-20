@@ -53,6 +53,10 @@ public class RestaurantService {
     public Restaurant updateRestaurant(Long id, RestaurantRequest request) throws Exception {
         Restaurant restaurant = getRestaurantById(id);
         // Court ID should not be updated after creation
+        if ((restaurant.getCourtId() != null && !restaurant.getCourtId().equals(request.courtId())) || 
+            (restaurant.getCourtId() == null && request.courtId() != null)) {
+            throw new GenericException(RestaurantError.COURT_ID_MISMATCH);
+        }
 
         restaurant.setName(request.name());
         restaurant.setDescription(request.description());
@@ -67,7 +71,12 @@ public class RestaurantService {
     }
 
     private void verifyCourtExists(Long courtId) {
-        boolean exists = courtClient.checkCourtExists(courtId);
+        boolean exists = false;
+        try {
+            exists = courtClient.checkCourtExists(courtId);
+        } catch (Exception e) {
+            log.error("Failed to check court with ID {}", courtId, e);
+        }
         if (!exists) {
             log.warn("Court with ID {} not found", courtId);
             throw new GenericException(RestaurantError.COURT_NOT_FOUND);
