@@ -3,20 +3,22 @@ package com.imthath.food_street.restaurant_service;
 import com.imthath.food_street.restaurant_service.dto.RestaurantRequest;
 import com.imthath.food_street.restaurant_service.error.RestaurantError;
 import com.imthath.utils.guardrail.GenericException;
+import com.imthath.food_street.restaurant_service.client.CourtClient;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
 import java.util.List;
 
 @Service
+@Slf4j
 public class RestaurantService {
     @Autowired
     private RestaurantRepository restaurantRepository;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private CourtClient courtClient;
 
     public Restaurant createRestaurant(RestaurantRequest request) throws Exception {
         // Verify if court exists if courtId is provided
@@ -65,9 +67,9 @@ public class RestaurantService {
     }
 
     private void verifyCourtExists(Long courtId) {
-        try {
-            restTemplate.getForObject("http://localhost:8083/court/" + courtId, Object.class);
-        } catch (Exception e) {
+        boolean exists = courtClient.checkCourtExists(courtId);
+        if (!exists) {
+            log.warn("Court with ID {} not found", courtId);
             throw new GenericException(RestaurantError.COURT_NOT_FOUND);
         }
     }
