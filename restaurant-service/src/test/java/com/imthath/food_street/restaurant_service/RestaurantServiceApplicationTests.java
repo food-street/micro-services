@@ -12,6 +12,7 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
+import static com.imthath.food_street.restaurant_service.error.RestaurantError.*;
 
 @SuppressWarnings("TrailingWhitespacesInTextBlock")
 @Import(TestcontainersConfiguration.class)
@@ -137,7 +138,7 @@ class RestaurantServiceApplicationTests {
         given()
                 .get("/restaurant/{id}", restaurantId)
                 .then()
-                .statusCode(902); // RESTAURANT_NOT_FOUND error code
+                .statusCode(RESTAURANT_NOT_FOUND.getCode());
     }
 
     @Test
@@ -154,7 +155,7 @@ class RestaurantServiceApplicationTests {
                     """)
                 .post("/restaurant")
                 .then()
-                .statusCode(901); // COURT_NOT_FOUND error code
+                .statusCode(COURT_NOT_FOUND.getCode());
     }
 
     @Test
@@ -193,7 +194,7 @@ class RestaurantServiceApplicationTests {
                     """)
                 .put("/restaurant/{id}", restaurantId)
                 .then()
-                .statusCode(903); // COURT_ID_MISMATCH error code
+                .statusCode(COURT_ID_MISMATCH.getCode());
     }
 
     @Test
@@ -210,7 +211,7 @@ class RestaurantServiceApplicationTests {
                     """)
                 .post("/restaurant")
                 .then()
-                .statusCode(901); // COURT_NOT_FOUND error code
+                .statusCode(COURT_NOT_FOUND.getCode());
     }
 
     @Test
@@ -253,7 +254,7 @@ class RestaurantServiceApplicationTests {
                     """)
                 .put("/restaurant/{id}", restaurantId)
                 .then()
-                .statusCode(903); // COURT_ID_MISMATCH error code
+                .statusCode(COURT_ID_MISMATCH.getCode());
     }
 
     @Test
@@ -297,7 +298,7 @@ class RestaurantServiceApplicationTests {
                     """)
                 .put("/restaurant/{id}", restaurantId)
                 .then()
-                .statusCode(903); // COURT_ID_MISMATCH error code
+                .statusCode(COURT_ID_MISMATCH.getCode());
     }
 
     private Integer createSampleRestaurant() {
