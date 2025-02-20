@@ -26,7 +26,7 @@ public class Restaurant {
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 
-    @Column(name = "court_id", nullable = false)
+    @Column(name = "court_id")
     private Long courtId;
 
     @Column(name = "created_at", updatable = false)

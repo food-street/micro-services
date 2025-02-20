@@ -148,6 +148,50 @@ class RestaurantServiceApplicationTests {
                 .statusCode(901); // COURT_NOT_FOUND error code
     }
 
+    @Test
+    void createRestaurantWithoutCourtId() {
+        given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Test Restaurant",
+                        "description": "Test Description",
+                        "imageUrl": "http://example.com/image.jpg"
+                    }
+                    """)
+                .post("/restaurant")
+                .then()
+                .statusCode(201)
+                .body("id", notNullValue())
+                .body("name", equalTo("Test Restaurant"))
+                .body("description", equalTo("Test Description"))
+                .body("imageUrl", equalTo("http://example.com/image.jpg"))
+                .body("courtId", nullValue());
+    }
+
+    @Test
+    void updateRestaurantRemoveCourtId() {
+        var restaurantId = createSampleRestaurant();
+
+        given()
+                .contentType("application/json")
+                .body("""
+                    {
+                        "name": "Updated Restaurant",
+                        "description": "Updated Description",
+                        "imageUrl": "http://example.com/updated_image.jpg"
+                    }
+                    """)
+                .put("/restaurant/{id}", restaurantId)
+                .then()
+                .statusCode(200)
+                .body("id", equalTo(restaurantId))
+                .body("name", equalTo("Updated Restaurant"))
+                .body("description", equalTo("Updated Description"))
+                .body("imageUrl", equalTo("http://example.com/updated_image.jpg"))
+                .body("courtId", nullValue());
+    }
+
     private Integer createSampleRestaurant() {
         return given()
                 .contentType("application/json")

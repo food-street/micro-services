@@ -19,8 +19,10 @@ public class RestaurantService {
     private RestTemplate restTemplate;
 
     public Restaurant createRestaurant(RestaurantRequest request) throws Exception {
-        // Verify if court exists
-        verifyCourtExists(request.courtId());
+        // Verify if court exists if courtId is provided
+        if (request.courtId() != null) {
+            verifyCourtExists(request.courtId());
+        }
 
         Restaurant restaurant = new Restaurant();
         restaurant.setName(request.name());
@@ -48,7 +50,9 @@ public class RestaurantService {
 
     public Restaurant updateRestaurant(Long id, RestaurantRequest request) throws Exception {
         Restaurant restaurant = getRestaurantById(id);
-        verifyCourtExists(request.courtId());
+        if (request.courtId() != null) {
+            verifyCourtExists(request.courtId());
+        }
 
         restaurant.setName(request.name());
         restaurant.setDescription(request.description());
