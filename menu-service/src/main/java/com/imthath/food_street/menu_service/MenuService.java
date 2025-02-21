@@ -34,7 +34,7 @@ public class MenuService {
     }
 
     // Get menu of a restaurant - categories with nested items
-    public List<CategoryResponse> getMenuByRestaurant(String restaurantId) {
+    public List<CategoryResponse> getMenuByRestaurant(long restaurantId) {
         verifyRestaurantExists(restaurantId);
         List<Category> categories = categoryRepository.findByRestaurantIdOrderByDisplayOrder(restaurantId);
         List<CategoryResponse> menu = new ArrayList<>();
@@ -48,18 +48,18 @@ public class MenuService {
     }
 
     // Search within a restaurant (paginated)
-    public Page<Item> searchMenuInRestaurant(String restaurantId, String keyword, Pageable pageable) {
+    public Page<Item> searchMenuInRestaurant(long restaurantId, String keyword, Pageable pageable) {
         verifyRestaurantExists(restaurantId);
         return itemRepository.searchByRestaurant(restaurantId, keyword, pageable);
     }
 
     // Search across multiple restaurants (paginated)
-    public Page<Item> searchMenuInRestaurants(List<String> restaurantIds, String keyword, Pageable pageable) {
+    public Page<Item> searchMenuInRestaurants(List<Long> restaurantIds, String keyword, Pageable pageable) {
         return itemRepository.searchByRestaurantIds(restaurantIds, keyword, pageable);
     }
 
-    public Item createItem(String restaurantId, CreateItemRequest request) {
-        if (!restaurantId.equals(request.restaurantId())) {
+    public Item createItem(long restaurantId, CreateItemRequest request) {
+        if (restaurantId != request.restaurantId()) {
             throw new GenericException(RESTAURANT_MISMATCH);
         }
         verifyRestaurantExists(restaurantId);
@@ -76,12 +76,12 @@ public class MenuService {
         return itemRepository.save(item);
     }
 
-    public Item updateItem(String restaurantId, String itemId, UpdateItemRequest request) {
+    public Item updateItem(long restaurantId, String itemId, UpdateItemRequest request) {
         verifyRestaurantExists(restaurantId);
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
 
-        if (!restaurantId.equals(item.getRestaurantId())) {
+        if (restaurantId != item.getRestaurantId()) {
             throw new GenericException(RESTAURANT_MISMATCH);
         }
 
@@ -95,19 +95,19 @@ public class MenuService {
         return itemRepository.save(item);
     }
 
-    public void deleteItem(String restaurantId, String itemId) {
+    public void deleteItem(long restaurantId, String itemId) {
         verifyRestaurantExists(restaurantId);
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new GenericException(ITEM_NOT_FOUND));
 
-        if (!restaurantId.equals(item.getRestaurantId())) {
+        if (restaurantId != item.getRestaurantId()) {
             throw new GenericException(RESTAURANT_MISMATCH);
         }
         itemRepository.deleteById(itemId);
     }
 
-    public Category createCategory(String restaurantId, CreateCategoryRequest request) {
-        if (!restaurantId.equals(request.restaurantId())) {
+    public Category createCategory(long restaurantId, CreateCategoryRequest request) {
+        if (restaurantId != request.restaurantId()) {
             throw new GenericException(RESTAURANT_MISMATCH);
         }
         verifyRestaurantExists(restaurantId);
@@ -122,12 +122,12 @@ public class MenuService {
         return categoryRepository.save(category);
     }
 
-    public Category updateCategory(String restaurantId, String categoryId, UpdateCategoryRequest request) {
+    public Category updateCategory(long restaurantId, String categoryId, UpdateCategoryRequest request) {
         verifyRestaurantExists(restaurantId);
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new GenericException(CATEGORY_NOT_FOUND));
 
-        if (!restaurantId.equals(category.getRestaurantId())) {
+        if (restaurantId != category.getRestaurantId()) {
             throw new GenericException(RESTAURANT_MISMATCH);
         }
 
@@ -140,21 +140,21 @@ public class MenuService {
         return categoryRepository.save(category);
     }
 
-    public void deleteCategory(String restaurantId, String categoryId) {
+    public void deleteCategory(long restaurantId, String categoryId) {
         verifyRestaurantExists(restaurantId);
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new GenericException(CATEGORY_NOT_FOUND));
 
-        if (!restaurantId.equals(category.getRestaurantId())) {
+        if (restaurantId != category.getRestaurantId()) {
             throw new GenericException(RESTAURANT_MISMATCH);
         }
         categoryRepository.deleteById(categoryId);
     }
 
-    private void verifyRestaurantExists(String restaurantId) throws GenericException{
+    private void verifyRestaurantExists(long restaurantId) throws GenericException {
         boolean exists = false;
         try {
-            exists = restaurantClient.checkRestaurantExists(Long.parseLong(restaurantId));
+            exists = restaurantClient.checkRestaurantExists(restaurantId);
         } catch (Exception e) {
             log.error("Failed to check restaurant with ID {}", restaurantId, e);
         }

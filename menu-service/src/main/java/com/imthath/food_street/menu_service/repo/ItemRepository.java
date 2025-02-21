@@ -9,14 +9,14 @@ import java.util.List;
 
 public interface ItemRepository extends MongoRepository<Item, String> {
 
-    Page<Item> findByRestaurantId(String restaurantId, Pageable pageable);
+    Page<Item> findByRestaurantId(long restaurantId, Pageable pageable);
 
     @Query("{ 'restaurantId': ?0, '$or': [ { 'name': { $regex: ?1, $options: 'i' } }, { 'description': { $regex: ?1, $options: 'i' } } ] }")
-    Page<Item> searchByRestaurant(String restaurantId, String keyword, Pageable pageable);
+    Page<Item> searchByRestaurant(long restaurantId, String keyword, Pageable pageable);
 
     @Query("{ 'restaurantId': { $in: ?0 }, '$or': [ { 'name': { $regex: ?1, $options: 'i' } }, { 'description': { $regex: ?1, $options: 'i' } } ] }")
-    Page<Item> searchByRestaurantIds(List<String> restaurantIds, String keyword, Pageable pageable);
+    Page<Item> searchByRestaurantIds(List<Long> restaurantIds, String keyword, Pageable pageable);
 
-    List<Item> findByRestaurantIdAndCategoryIdOrderByDisplayOrder(String restaurantId, String categoryId);
+    List<Item> findByRestaurantIdAndCategoryIdOrderByDisplayOrder(long restaurantId, String categoryId);
 }
 

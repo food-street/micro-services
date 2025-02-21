@@ -19,7 +19,7 @@ class MenuSearchTests {
     @LocalServerPort
     private int port;
 
-    private final String VALID_RESTAURANT_ID = "rest123";
+    private final long VALID_RESTAURANT_ID = 123;
 
     @BeforeEach
     void setUp() {

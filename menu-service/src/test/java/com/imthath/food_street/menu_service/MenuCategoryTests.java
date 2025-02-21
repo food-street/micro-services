@@ -19,8 +19,8 @@ class MenuCategoryTests {
     @LocalServerPort
     private int port;
 
-    private final String VALID_RESTAURANT_ID = "123";
-    private final String INVALID_RESTAURANT_ID = "rest999";
+    private final long VALID_RESTAURANT_ID = 123;
+    private final long INVALID_RESTAURANT_ID = 999;
 
     @BeforeEach
     void setUp() {

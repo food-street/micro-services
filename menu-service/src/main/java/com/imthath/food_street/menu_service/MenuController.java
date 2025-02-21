@@ -24,13 +24,13 @@ public class MenuController {
 
     @GetMapping("/{restaurantId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<CategoryResponse> getMenuByRestaurant(@PathVariable String restaurantId) {
+    public List<CategoryResponse> getMenuByRestaurant(@PathVariable long restaurantId) {
         return menuService.getMenuByRestaurant(restaurantId);
     }
 
     @GetMapping("/{restaurantId}/search")
     public ResponseEntity<Page<Item>> searchInRestaurant(
-            @PathVariable String restaurantId,
+            @PathVariable long restaurantId,
             @RequestParam String keyword,
             Pageable pageable) {
         return ResponseEntity.ok(menuService.searchMenuInRestaurant(restaurantId, keyword, pageable));
@@ -38,7 +38,7 @@ public class MenuController {
 
     @GetMapping("/search")
     public ResponseEntity<Page<Item>> searchInRestaurants(
-            @RequestParam List<String> restaurantIds,
+            @RequestParam List<Long> restaurantIds,
             @RequestParam String keyword,
             Pageable pageable) {
         return ResponseEntity.ok(menuService.searchMenuInRestaurants(restaurantIds, keyword, pageable));
@@ -47,7 +47,7 @@ public class MenuController {
     @PostMapping("/{restaurantId}/items")
     @ResponseStatus(HttpStatus.CREATED)
     public Item createItem(
-            @PathVariable String restaurantId,
+            @PathVariable long restaurantId,
             @Valid @RequestBody CreateItemRequest request) {
         return menuService.createItem(restaurantId, request);
     }
@@ -55,7 +55,7 @@ public class MenuController {
     @PutMapping("/{restaurantId}/items/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public Item updateItem(
-            @PathVariable String restaurantId,
+            @PathVariable long restaurantId,
             @PathVariable String itemId,
             @Valid @RequestBody UpdateItemRequest request) {
         return menuService.updateItem(restaurantId, itemId, request);
@@ -64,7 +64,7 @@ public class MenuController {
     @DeleteMapping("/{restaurantId}/items/{itemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteItem(
-            @PathVariable String restaurantId,
+            @PathVariable long restaurantId,
             @PathVariable String itemId) {
         menuService.deleteItem(restaurantId, itemId);
     }
@@ -72,7 +72,7 @@ public class MenuController {
     @PostMapping("/{restaurantId}/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public Category createCategory(
-            @PathVariable String restaurantId,
+            @PathVariable long restaurantId,
             @Valid @RequestBody CreateCategoryRequest request) {
         return menuService.createCategory(restaurantId, request);
     }
@@ -80,7 +80,7 @@ public class MenuController {
     @PutMapping("/{restaurantId}/categories/{categoryId}")
     @ResponseStatus(HttpStatus.OK)
     public Category updateCategory(
-            @PathVariable String restaurantId,
+            @PathVariable long restaurantId,
             @PathVariable String categoryId,
             @Valid @RequestBody UpdateCategoryRequest request) {
         return menuService.updateCategory(restaurantId, categoryId, request);
@@ -89,7 +89,7 @@ public class MenuController {
     @DeleteMapping("/{restaurantId}/categories/{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(
-            @PathVariable String restaurantId,
+            @PathVariable long restaurantId,
             @PathVariable String categoryId) {
         menuService.deleteCategory(restaurantId, categoryId);
     }
