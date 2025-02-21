@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(collection = "items")
-public class MenuItem extends BaseEntity {
+public class Item extends BaseEntity {
     private String categoryId;      // Required
     private BigDecimal price;       // Required
 }

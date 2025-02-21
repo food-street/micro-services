@@ -2,7 +2,7 @@ package com.imthath.food_street.menu_service;
 
 import com.imthath.food_street.menu_service.dto.CategoryResponse;
 import com.imthath.food_street.menu_service.model.Category;
-import com.imthath.food_street.menu_service.model.MenuItem;
+import com.imthath.food_street.menu_service.model.Item;
 import com.imthath.food_street.menu_service.repo.CategoryRepository;
 import com.imthath.food_street.menu_service.repo.ItemRepository;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,7 @@ public class MenuService {
         List<CategoryResponse> menu = new ArrayList<>();
 
         for (Category category : categories) {
-            List<MenuItem> items = itemRepository.findByRestaurantId(restaurantId, Pageable.unpaged()).getContent();
+            List<Item> items = itemRepository.findByRestaurantId(restaurantId, Pageable.unpaged()).getContent();
             menu.add(CategoryResponse.from(category, items));
         }
 
@@ -36,12 +36,12 @@ public class MenuService {
     }
 
     // 2. Search within a restaurant (paginated)
-    public Page<MenuItem> searchMenuInRestaurant(String restaurantId, String keyword, Pageable pageable) {
+    public Page<Item> searchMenuInRestaurant(String restaurantId, String keyword, Pageable pageable) {
         return itemRepository.searchByRestaurant(restaurantId, keyword, pageable);
     }
 
     // 3. Search across multiple restaurants (paginated)
-    public Page<MenuItem> searchMenuInRestaurants(List<String> restaurantIds, String keyword, Pageable pageable) {
+    public Page<Item> searchMenuInRestaurants(List<String> restaurantIds, String keyword, Pageable pageable) {
         return itemRepository.searchByRestaurantIds(restaurantIds, keyword, pageable);
     }
 }

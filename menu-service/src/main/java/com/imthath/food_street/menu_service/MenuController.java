@@ -1,8 +1,7 @@
 package com.imthath.food_street.menu_service;
 
 import com.imthath.food_street.menu_service.dto.CategoryResponse;
-import com.imthath.food_street.menu_service.model.Category;
-import com.imthath.food_street.menu_service.model.MenuItem;
+import com.imthath.food_street.menu_service.model.Item;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/menu")
@@ -31,7 +29,7 @@ public class MenuController {
 
     // 2. Search in a restaurant
     @GetMapping("/{restaurantId}/search")
-    public ResponseEntity<Page<MenuItem>> searchInRestaurant(
+    public ResponseEntity<Page<Item>> searchInRestaurant(
             @PathVariable String restaurantId,
             @RequestParam String keyword,
             Pageable pageable) {
@@ -40,7 +38,7 @@ public class MenuController {
 
     // 3. Search across multiple restaurants
     @GetMapping("/search")
-    public ResponseEntity<Page<MenuItem>> searchInRestaurants(
+    public ResponseEntity<Page<Item>> searchInRestaurants(
             @RequestParam List<String> restaurantIds,
             @RequestParam String keyword,
             Pageable pageable) {
