@@ -16,13 +16,23 @@ public class Routes {
     final String USER = "user";
     final String AUTH = "auth";
     final String OTP = "otp";
-    final String CART = "cart";
     final String COURT = "court";
+    final String RESTAURANT = "restaurant";
+    final String IMAGE = "image";
+    final String MENU = "menu";
+    final String CART = "cart";
+    final String ORDER = "order";
+    final String PAYMENT = "payment";
 
     @Value("${user.service.url}") private String userServiceUrl;
     @Value("${otp.service.url}") private String otpServiceUrl;
-    @Value("${cart.service.url}") private String cartServiceUrl;
     @Value("${court.service.url}") private String courtServiceUrl;
+    @Value("${restaurant.service.url}") private String restaurantServiceUrl;
+    @Value("${image.service.url}") private String imageServiceUrl;
+    @Value("${menu.service.url}") private String menuServiceUrl;
+    @Value("${cart.service.url}") private String cartServiceUrl;
+    @Value("${order.service.url}") private String orderServiceUrl;
+    @Value("${payment.service.url}") private String paymentServiceUrl;
 
     @Bean RouterFunction<ServerResponse> userRoute() {
         return buildServiceRoute(USER, userServiceUrl);
@@ -36,12 +46,32 @@ public class Routes {
         return buildServiceRoute(OTP, otpServiceUrl);
     }
 
+    @Bean RouterFunction<ServerResponse> courtRoute() {
+        return buildServiceRoute(COURT, courtServiceUrl);
+    }
+
+    @Bean RouterFunction<ServerResponse> restaurantRoute() {
+        return buildServiceRoute(RESTAURANT, restaurantServiceUrl);
+    }
+
+    @Bean RouterFunction<ServerResponse> imageRoute() {
+        return buildServiceRoute(IMAGE, imageServiceUrl);
+    }
+
+    @Bean RouterFunction<ServerResponse> menuRoute() {
+        return buildServiceRoute(MENU, menuServiceUrl);
+    }
+
     @Bean RouterFunction<ServerResponse> cartRoute() {
         return buildServiceRoute(CART, cartServiceUrl);
     }
 
-    @Bean RouterFunction<ServerResponse> courtRoute() {
-        return buildServiceRoute(COURT, courtServiceUrl);
+    @Bean RouterFunction<ServerResponse> orderRoute() {
+        return buildServiceRoute(ORDER, orderServiceUrl);
+    }
+
+    @Bean RouterFunction<ServerResponse> paymentRoute() {
+        return buildServiceRoute(PAYMENT, paymentServiceUrl);
     }
 
     @Bean
