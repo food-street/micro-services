@@ -4,8 +4,6 @@ import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Document(collection = "categories")
 public class Category extends BaseEntity {
 }
