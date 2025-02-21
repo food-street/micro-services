@@ -20,14 +20,12 @@ public class MenuController {
         this.menuService = menuService;
     }
 
-    // 1. Get menu of a restaurant
     @GetMapping("/{restaurantId}")
     @ResponseStatus(HttpStatus.OK)
     public List<CategoryResponse> getMenuByRestaurant(@PathVariable String restaurantId) {
         return menuService.getMenuByRestaurant(restaurantId);
     }
 
-    // 2. Search in a restaurant
     @GetMapping("/{restaurantId}/search")
     public ResponseEntity<Page<Item>> searchInRestaurant(
             @PathVariable String restaurantId,
@@ -36,7 +34,6 @@ public class MenuController {
         return ResponseEntity.ok(menuService.searchMenuInRestaurant(restaurantId, keyword, pageable));
     }
 
-    // 3. Search across multiple restaurants
     @GetMapping("/search")
     public ResponseEntity<Page<Item>> searchInRestaurants(
             @RequestParam List<String> restaurantIds,

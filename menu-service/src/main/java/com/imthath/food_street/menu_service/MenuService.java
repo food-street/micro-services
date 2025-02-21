@@ -22,7 +22,7 @@ public class MenuService {
         this.categoryRepository = categoryRepository;
     }
 
-    // 1. Get menu of a restaurant - categories with nested items
+    // Get menu of a restaurant - categories with nested items
     public List<CategoryResponse> getMenuByRestaurant(String restaurantId) {
         List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
         List<CategoryResponse> menu = new ArrayList<>();
@@ -35,12 +35,12 @@ public class MenuService {
         return menu;
     }
 
-    // 2. Search within a restaurant (paginated)
+    // Search within a restaurant (paginated)
     public Page<Item> searchMenuInRestaurant(String restaurantId, String keyword, Pageable pageable) {
         return itemRepository.searchByRestaurant(restaurantId, keyword, pageable);
     }
 
-    // 3. Search across multiple restaurants (paginated)
+    // Search across multiple restaurants (paginated)
     public Page<Item> searchMenuInRestaurants(List<String> restaurantIds, String keyword, Pageable pageable) {
         return itemRepository.searchByRestaurantIds(restaurantIds, keyword, pageable);
     }
