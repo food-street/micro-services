@@ -5,6 +5,8 @@ import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.Item;
 import com.imthath.food_street.menu_service.repo.CategoryRepository;
 import com.imthath.food_street.menu_service.repo.ItemRepository;
+import com.imthath.utils.guardrail.GenericException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
 
 import java.util.*;
+
+import static com.imthath.food_street.menu_service.MenuError.*;
 
 @Service
 public class MenuService {
@@ -77,7 +81,7 @@ public class MenuService {
 
     public void deleteItem(String itemId) {
         if (!itemRepository.existsById(itemId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found");
+            throw new GenericException(ITEM_NOT_FOUND);
         }
         itemRepository.deleteById(itemId);
     }
@@ -96,7 +100,7 @@ public class MenuService {
 
     public Category updateCategory(String categoryId, UpdateCategoryRequest request) {
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+                .orElseThrow(() -> new GenericException(CATEGORY_NOT_FOUND));
 
         if (request.name() != null) category.setName(request.name());
         if (request.description() != null) category.setDescription(request.description());
@@ -109,7 +113,7 @@ public class MenuService {
 
     public void deleteCategory(String categoryId) {
         if (!categoryRepository.existsById(categoryId)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
+            throw new GenericException(CATEGORY_NOT_FOUND);
         }
         categoryRepository.deleteById(categoryId);
     }
