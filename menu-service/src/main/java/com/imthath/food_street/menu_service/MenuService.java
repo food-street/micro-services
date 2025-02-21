@@ -24,11 +24,11 @@ public class MenuService {
 
     // Get menu of a restaurant - categories with nested items
     public List<CategoryResponse> getMenuByRestaurant(String restaurantId) {
-        List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
+        List<Category> categories = categoryRepository.findByRestaurantIdOrderByDisplayOrder(restaurantId);
         List<CategoryResponse> menu = new ArrayList<>();
 
         for (Category category : categories) {
-            List<Item> items = itemRepository.findByRestaurantId(restaurantId, Pageable.unpaged()).getContent();
+            List<Item> items = itemRepository.findByRestaurantIdAndCategoryIdOrderByDisplayOrder(restaurantId, category.getId());
             menu.add(CategoryResponse.from(category, items));
         }
 

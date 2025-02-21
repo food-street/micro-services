@@ -16,5 +16,7 @@ public interface ItemRepository extends MongoRepository<Item, String> {
 
     @Query("{ 'restaurantId': { $in: ?0 }, '$or': [ { 'name': { $regex: ?1, $options: 'i' } }, { 'description': { $regex: ?1, $options: 'i' } } ] }")
     Page<Item> searchByRestaurantIds(List<String> restaurantIds, String keyword, Pageable pageable);
+
+    List<Item> findByRestaurantIdAndCategoryIdOrderByDisplayOrder(String restaurantId, String categoryId);
 }
 
