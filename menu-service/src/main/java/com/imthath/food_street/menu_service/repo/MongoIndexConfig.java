@@ -21,7 +21,7 @@ public class MongoIndexConfig {
     public void createIndexes() {
         // Index for restaurant-based search
         mongoTemplate.indexOps(Item.class).ensureIndex(
-                new Index().on("restaurantId", org.springframework.data.domain.Sort.Direction.ASC)
+                new Index().on("item_restaurantId", org.springframework.data.domain.Sort.Direction.ASC)
                         .on("name", org.springframework.data.domain.Sort.Direction.ASC)
                         .on("description", org.springframework.data.domain.Sort.Direction.ASC)
         );
@@ -37,7 +37,7 @@ public class MongoIndexConfig {
 
         // Index for categories
         mongoTemplate.indexOps(Category.class).ensureIndex(
-                new Index().on("restaurantId", org.springframework.data.domain.Sort.Direction.ASC)
+                new Index().on("category_restaurantId", org.springframework.data.domain.Sort.Direction.ASC)
                         .on("name", org.springframework.data.domain.Sort.Direction.ASC)
         );
     }

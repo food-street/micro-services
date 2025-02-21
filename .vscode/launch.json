@@ -43,6 +43,56 @@
         },
         {
             "type": "java",
+            "name": "Order Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.food_street.order_service.OrderServiceApplication",
+            "projectName": "order-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Payment Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.food_street.payment_service.PaymentServiceApplication",
+            "projectName": "payment-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Menu Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.food_street.menu_service.MenuServiceApplication",
+            "projectName": "menu-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Restaurant Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.food_street.restaurant_service.RestaurantServiceApplication",
+            "projectName": "restaurant-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Notification Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.food_street.notification_service.NotificationServiceApplication",
+            "projectName": "notification-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
             "name": "Image Service",
             "request": "launch",
             "cwd": "${workspaceFolder}",
