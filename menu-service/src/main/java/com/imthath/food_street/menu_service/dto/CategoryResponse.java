@@ -9,7 +9,7 @@ import java.util.List;
 public record CategoryResponse(
     String id,
     String name,
-    String restaurantId,
+    long restaurantId,
     String description,
     int displayOrder,
     boolean isAvailable,

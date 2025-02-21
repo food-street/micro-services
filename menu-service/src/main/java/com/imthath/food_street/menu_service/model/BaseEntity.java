@@ -17,7 +17,7 @@ public abstract class BaseEntity {
     @Id
     private String id;
 
-    private String restaurantId;    // Required
+    private long restaurantId;    // Required
     private String name;            // Required
     private String description;     // Optional
     private String imageUrl;        // Optional

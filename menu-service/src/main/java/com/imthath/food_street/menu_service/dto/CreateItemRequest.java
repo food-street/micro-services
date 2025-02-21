@@ -4,8 +4,8 @@ import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 public record CreateItemRequest(
-    @NotBlank(message = "Restaurant ID is required")
-    String restaurantId,
+    @NotNull(message = "Restaurant ID is required")
+    long restaurantId,
 
     @NotBlank(message = "Category ID is required")
     String categoryId,

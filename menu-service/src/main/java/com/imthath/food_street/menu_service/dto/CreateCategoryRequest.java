@@ -3,8 +3,8 @@ package com.imthath.food_street.menu_service.dto;
 import jakarta.validation.constraints.*;
 
 public record CreateCategoryRequest(
-    @NotBlank(message = "Restaurant ID is required")
-    String restaurantId,
+    @NotNull(message = "Restaurant ID is required")
+    long restaurantId,
 
     @NotBlank(message = "Name is required")
     String name,
