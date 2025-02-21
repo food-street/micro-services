@@ -1,5 +1,6 @@
 package com.imthath.food_street.menu_service;
 
+import com.imthath.food_street.menu_service.client.RestaurantClient;
 import com.imthath.food_street.menu_service.dto.*;
 import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.Item;
@@ -7,6 +8,7 @@ import com.imthath.food_street.menu_service.repo.CategoryRepository;
 import com.imthath.food_street.menu_service.repo.ItemRepository;
 import com.imthath.utils.guardrail.GenericException;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,18 +20,22 @@ import java.util.*;
 import static com.imthath.food_street.menu_service.MenuError.*;
 
 @Service
+@Slf4j
 public class MenuService {
 
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
+    private final RestaurantClient restaurantClient;
 
-    public MenuService(ItemRepository itemRepository, CategoryRepository categoryRepository) {
+    public MenuService(ItemRepository itemRepository, CategoryRepository categoryRepository, RestaurantClient restaurantClient) {
         this.itemRepository = itemRepository;
         this.categoryRepository = categoryRepository;
+        this.restaurantClient = restaurantClient;
     }
 
     // Get menu of a restaurant - categories with nested items
     public List<CategoryResponse> getMenuByRestaurant(String restaurantId) {
+        verifyRestaurantExists(restaurantId);
         List<Category> categories = categoryRepository.findByRestaurantIdOrderByDisplayOrder(restaurantId);
         List<CategoryResponse> menu = new ArrayList<>();
 
@@ -43,6 +49,7 @@ public class MenuService {
 
     // Search within a restaurant (paginated)
     public Page<Item> searchMenuInRestaurant(String restaurantId, String keyword, Pageable pageable) {
+        verifyRestaurantExists(restaurantId);
         return itemRepository.searchByRestaurant(restaurantId, keyword, pageable);
     }
 
@@ -51,7 +58,11 @@ public class MenuService {
         return itemRepository.searchByRestaurantIds(restaurantIds, keyword, pageable);
     }
 
-    public Item createItem(CreateItemRequest request) {
+    public Item createItem(String restaurantId, CreateItemRequest request) {
+        if (!restaurantId.equals(request.restaurantId())) {
+            throw new GenericException(RESTAURANT_MISMATCH);
+        }
+        verifyRestaurantExists(restaurantId);
         Item item = Item.builder()
                 .restaurantId(request.restaurantId())
                 .categoryId(request.categoryId())
@@ -65,9 +76,14 @@ public class MenuService {
         return itemRepository.save(item);
     }
 
-    public Item updateItem(String itemId, UpdateItemRequest request) {
+    public Item updateItem(String restaurantId, String itemId, UpdateItemRequest request) {
+        verifyRestaurantExists(restaurantId);
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
+
+        if (!restaurantId.equals(item.getRestaurantId())) {
+            throw new GenericException(RESTAURANT_MISMATCH);
+        }
 
         if (request.name() != null) item.setName(request.name());
         if (request.description() != null) item.setDescription(request.description());
@@ -79,14 +95,22 @@ public class MenuService {
         return itemRepository.save(item);
     }
 
-    public void deleteItem(String itemId) {
-        if (!itemRepository.existsById(itemId)) {
-            throw new GenericException(ITEM_NOT_FOUND);
+    public void deleteItem(String restaurantId, String itemId) {
+        verifyRestaurantExists(restaurantId);
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new GenericException(ITEM_NOT_FOUND));
+
+        if (!restaurantId.equals(item.getRestaurantId())) {
+            throw new GenericException(RESTAURANT_MISMATCH);
         }
         itemRepository.deleteById(itemId);
     }
 
-    public Category createCategory(CreateCategoryRequest request) {
+    public Category createCategory(String restaurantId, CreateCategoryRequest request) {
+        if (!restaurantId.equals(request.restaurantId())) {
+            throw new GenericException(RESTAURANT_MISMATCH);
+        }
+        verifyRestaurantExists(restaurantId);
         Category category = Category.builder()
                 .restaurantId(request.restaurantId())
                 .name(request.name())
@@ -98,9 +122,14 @@ public class MenuService {
         return categoryRepository.save(category);
     }
 
-    public Category updateCategory(String categoryId, UpdateCategoryRequest request) {
+    public Category updateCategory(String restaurantId, String categoryId, UpdateCategoryRequest request) {
+        verifyRestaurantExists(restaurantId);
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new GenericException(CATEGORY_NOT_FOUND));
+
+        if (!restaurantId.equals(category.getRestaurantId())) {
+            throw new GenericException(RESTAURANT_MISMATCH);
+        }
 
         if (request.name() != null) category.setName(request.name());
         if (request.description() != null) category.setDescription(request.description());
@@ -111,11 +140,28 @@ public class MenuService {
         return categoryRepository.save(category);
     }
 
-    public void deleteCategory(String categoryId) {
-        if (!categoryRepository.existsById(categoryId)) {
-            throw new GenericException(CATEGORY_NOT_FOUND);
+    public void deleteCategory(String restaurantId, String categoryId) {
+        verifyRestaurantExists(restaurantId);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new GenericException(CATEGORY_NOT_FOUND));
+
+        if (!restaurantId.equals(category.getRestaurantId())) {
+            throw new GenericException(RESTAURANT_MISMATCH);
         }
         categoryRepository.deleteById(categoryId);
+    }
+
+    private void verifyRestaurantExists(String restaurantId) throws GenericException{
+        boolean exists = false;
+        try {
+            exists = restaurantClient.checkRestaurantExists(Long.parseLong(restaurantId));
+        } catch (Exception e) {
+            log.error("Failed to check restaurant with ID {}", restaurantId, e);
+        }
+        if (!exists) {
+            log.warn("Restaurant with ID {} not found", restaurantId);
+            throw new GenericException(RESTAURANT_NOT_FOUND);
+        }
     }
 }
 
