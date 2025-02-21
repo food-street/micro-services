@@ -1,9 +1,6 @@
 package com.imthath.food_street.menu_service;
 
-import com.imthath.food_street.menu_service.dto.CategoryResponse;
-import com.imthath.food_street.menu_service.dto.CreateCategoryRequest;
-import com.imthath.food_street.menu_service.dto.CreateItemRequest;
-import com.imthath.food_street.menu_service.dto.UpdateItemRequest;
+import com.imthath.food_street.menu_service.dto.*;
 import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.Item;
 import com.imthath.food_street.menu_service.repo.CategoryRepository;
@@ -94,6 +91,19 @@ public class MenuService {
                 .displayOrder(request.displayOrder())
                 .isAvailable(request.isAvailable())
                 .build();
+        return categoryRepository.save(category);
+    }
+
+    public Category updateCategory(String categoryId, UpdateCategoryRequest request) {
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
+
+        if (request.name() != null) category.setName(request.name());
+        if (request.description() != null) category.setDescription(request.description());
+        if (request.imageUrl() != null) category.setImageUrl(request.imageUrl());
+        if (request.displayOrder() != null) category.setDisplayOrder(request.displayOrder());
+        if (request.isAvailable() != null) category.setAvailable(request.isAvailable());
+
         return categoryRepository.save(category);
     }
 

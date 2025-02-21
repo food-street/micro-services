@@ -1,9 +1,6 @@
 package com.imthath.food_street.menu_service;
 
-import com.imthath.food_street.menu_service.dto.CategoryResponse;
-import com.imthath.food_street.menu_service.dto.CreateCategoryRequest;
-import com.imthath.food_street.menu_service.dto.CreateItemRequest;
-import com.imthath.food_street.menu_service.dto.UpdateItemRequest;
+import com.imthath.food_street.menu_service.dto.*;
 import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.Item;
 import jakarta.validation.Valid;
@@ -47,13 +44,13 @@ public class MenuController {
         return ResponseEntity.ok(menuService.searchMenuInRestaurants(restaurantIds, keyword, pageable));
     }
 
-    @PostMapping("/items")
+    @PostMapping("/{restaurantId}/items")
     @ResponseStatus(HttpStatus.CREATED)
     public Item createItem(@Valid @RequestBody CreateItemRequest request) {
         return menuService.createItem(request);
     }
 
-    @PutMapping("/items/{itemId}")
+    @PutMapping("/{restaurantId}/items/{itemId}")
     @ResponseStatus(HttpStatus.OK)
     public Item updateItem(
             @PathVariable String itemId,
@@ -61,19 +58,27 @@ public class MenuController {
         return menuService.updateItem(itemId, request);
     }
 
-    @DeleteMapping("/items/{itemId}")
+    @DeleteMapping("/{restaurantId}/items/{itemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteItem(@PathVariable String itemId) {
         menuService.deleteItem(itemId);
     }
 
-    @PostMapping("/categories")
+    @PostMapping("/{restaurantId}/categories")
     @ResponseStatus(HttpStatus.CREATED)
     public Category createCategory(@Valid @RequestBody CreateCategoryRequest request) {
         return menuService.createCategory(request);
     }
 
-    @DeleteMapping("/categories/{categoryId}")
+    @PutMapping("/{restaurantId}/categories/{categoryId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Category updateCategory(
+            @PathVariable String categoryId,
+            @Valid @RequestBody UpdateCategoryRequest request) {
+        return menuService.updateCategory(categoryId, request);
+    }
+
+    @DeleteMapping("/{restaurantId}/categories/{categoryId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable String categoryId) {
         menuService.deleteCategory(categoryId);
