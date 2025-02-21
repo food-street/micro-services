@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>com.imthath.food-street</groupId>
 	<artifactId>menu-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>menu-service</name>
+	<version>0.0.1</version>
+	<name>Menu Service</name>
 	<description>To read and update menu of each restaurant </description>
 	<url/>
 	<licenses>
@@ -73,6 +73,12 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>mongodb</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.1.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>

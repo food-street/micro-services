@@ -14,7 +14,7 @@
     <groupId>com.imthath.food_street</groupId>
     <artifactId>image-service</artifactId>
     <version>0.0.1</version>
-    <name>image-service</name>
+    <name>Image Service</name>
     <description>Image Service for Food Street</description>
 
     <properties>
