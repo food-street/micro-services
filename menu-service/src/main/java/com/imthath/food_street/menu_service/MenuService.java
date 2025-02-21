@@ -1,5 +1,6 @@
 package com.imthath.food_street.menu_service;
 
+import com.imthath.food_street.menu_service.dto.CategoryResponse;
 import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.MenuItem;
 import com.imthath.food_street.menu_service.repo.CategoryRepository;
@@ -22,13 +23,13 @@ public class MenuService {
     }
 
     // 1. Get menu of a restaurant - categories with nested items
-    public Map<Category, List<MenuItem>> getMenuByRestaurant(String restaurantId) {
+    public List<CategoryResponse> getMenuByRestaurant(String restaurantId) {
         List<Category> categories = categoryRepository.findByRestaurantId(restaurantId);
-        Map<Category, List<MenuItem>> menu = new HashMap<>();
+        List<CategoryResponse> menu = new ArrayList<>();
 
         for (Category category : categories) {
             List<MenuItem> items = itemRepository.findByRestaurantId(restaurantId, Pageable.unpaged()).getContent();
-            menu.put(category, items);
+            menu.add(CategoryResponse.from(category, items));
         }
 
         return menu;

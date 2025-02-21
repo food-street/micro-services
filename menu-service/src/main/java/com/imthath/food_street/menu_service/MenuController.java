@@ -1,9 +1,11 @@
 package com.imthath.food_street.menu_service;
 
+import com.imthath.food_street.menu_service.dto.CategoryResponse;
 import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.MenuItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/menu")
+@RequestMapping("/menu")
 public class MenuController {
 
     private final MenuService menuService;
@@ -22,8 +24,9 @@ public class MenuController {
 
     // 1. Get menu of a restaurant
     @GetMapping("/{restaurantId}")
-    public ResponseEntity<Map<Category, List<MenuItem>>> getMenuByRestaurant(@PathVariable String restaurantId) {
-        return ResponseEntity.ok(menuService.getMenuByRestaurant(restaurantId));
+    @ResponseStatus(HttpStatus.OK)
+    public List<CategoryResponse> getMenuByRestaurant(@PathVariable String restaurantId) {
+        return menuService.getMenuByRestaurant(restaurantId);
     }
 
     // 2. Search in a restaurant

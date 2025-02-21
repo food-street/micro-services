@@ -20,6 +20,7 @@ public abstract class BaseEntity {
     private String description;     // Optional
     private String imageUrl;        // Optional
     private boolean isAvailable;    // Required
+    private int displayOrder;   // Required
 
     @CreatedDate
     @Field("created_at")
