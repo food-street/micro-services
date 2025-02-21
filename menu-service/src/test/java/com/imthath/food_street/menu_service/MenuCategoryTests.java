@@ -35,15 +35,7 @@ class MenuCategoryTests {
     void createCategory() {
         given()
             .contentType("application/json")
-            .body("""
-                {
-                    "name": "Test Category",
-                    "description": "Test Category Description",
-                    "restaurantId": 123,
-                    "displayOrder": 1,
-                    "isAvailable": true
-                }
-                """)
+            .body(validCategoryRequestBody())
             .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
             .then()
             .statusCode(201)
@@ -98,16 +90,23 @@ class MenuCategoryTests {
     private String createTestCategory() {
         return given()
             .contentType("application/json")
-            .body("""
-                {
-                    "name": "Test Category",
-                    "description": "Test Category Description"
-                }
-                """)
+            .body(validCategoryRequestBody())
             .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
             .then()
             .statusCode(201)
             .extract()
             .path("id");
+    }
+
+    private String validCategoryRequestBody() {
+        return String.format("""
+                {
+                    "name": "Test Category",
+                    "description": "Test Category Description",
+                    "restaurantId": %d,
+                    "displayOrder": 1,
+                    "isAvailable": true
+                }
+                """, VALID_RESTAURANT_ID);
     }
 }
