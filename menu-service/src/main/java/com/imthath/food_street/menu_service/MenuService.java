@@ -1,6 +1,9 @@
 package com.imthath.food_street.menu_service;
 
 import com.imthath.food_street.menu_service.dto.CategoryResponse;
+import com.imthath.food_street.menu_service.dto.CreateCategoryRequest;
+import com.imthath.food_street.menu_service.dto.CreateItemRequest;
+import com.imthath.food_street.menu_service.dto.UpdateItemRequest;
 import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.Item;
 import com.imthath.food_street.menu_service.repo.CategoryRepository;
@@ -8,6 +11,8 @@ import com.imthath.food_street.menu_service.repo.ItemRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.*;
 
@@ -43,6 +48,60 @@ public class MenuService {
     // Search across multiple restaurants (paginated)
     public Page<Item> searchMenuInRestaurants(List<String> restaurantIds, String keyword, Pageable pageable) {
         return itemRepository.searchByRestaurantIds(restaurantIds, keyword, pageable);
+    }
+
+    public Item createItem(CreateItemRequest request) {
+        Item item = Item.builder()
+                .restaurantId(request.restaurantId())
+                .categoryId(request.categoryId())
+                .name(request.name())
+                .description(request.description())
+                .price(request.price())
+                .imageUrl(request.imageUrl())
+                .displayOrder(request.displayOrder())
+                .isAvailable(request.isAvailable())
+                .build();
+        return itemRepository.save(item);
+    }
+
+    public Item updateItem(String itemId, UpdateItemRequest request) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
+
+        if (request.name() != null) item.setName(request.name());
+        if (request.description() != null) item.setDescription(request.description());
+        if (request.price() != null) item.setPrice(request.price());
+        if (request.imageUrl() != null) item.setImageUrl(request.imageUrl());
+        if (request.displayOrder() != null) item.setDisplayOrder(request.displayOrder());
+        if (request.isAvailable() != null) item.setAvailable(request.isAvailable());
+
+        return itemRepository.save(item);
+    }
+
+    public void deleteItem(String itemId) {
+        if (!itemRepository.existsById(itemId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found");
+        }
+        itemRepository.deleteById(itemId);
+    }
+
+    public Category createCategory(CreateCategoryRequest request) {
+        Category category = Category.builder()
+                .restaurantId(request.restaurantId())
+                .name(request.name())
+                .description(request.description())
+                .imageUrl(request.imageUrl())
+                .displayOrder(request.displayOrder())
+                .isAvailable(request.isAvailable())
+                .build();
+        return categoryRepository.save(category);
+    }
+
+    public void deleteCategory(String categoryId) {
+        if (!categoryRepository.existsById(categoryId)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
+        }
+        categoryRepository.deleteById(categoryId);
     }
 }
 

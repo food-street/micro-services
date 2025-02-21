@@ -1,13 +1,13 @@
 package com.imthath.food_street.menu_service.model;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@Setter
+@SuperBuilder
 @Document(collection = "items")
 public class Item extends BaseEntity {
     private String categoryId;      // Required
