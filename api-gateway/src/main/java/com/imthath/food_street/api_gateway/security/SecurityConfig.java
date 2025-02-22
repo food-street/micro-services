@@ -2,6 +2,7 @@ package com.imthath.food_street.api_gateway.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -10,8 +11,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authorization.AuthorizationDecision;
 
+import java.util.Arrays;
+
 @Configuration
 public class SecurityConfig  {
+
+    @Autowired
+    Environment environment;
     
     @Autowired
     SecurityFilter securityFilter;
@@ -25,7 +31,17 @@ public class SecurityConfig  {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        System.out.println("setting up bean for security config");
+        if (Arrays.asList(environment.getActiveProfiles()).contains("local")) {
+            System.out.println("setting up bean for security config in local profile");
+            return http
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(auth -> auth
+                    .anyRequest().permitAll()
+                )
+                .build();
+        }
+
+        System.out.println("setting up bean for security config in production/staging");
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
