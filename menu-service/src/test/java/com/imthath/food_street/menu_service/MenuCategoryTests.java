@@ -8,7 +8,6 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
 
-import static com.imthath.food_street.menu_service.MenuError.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -22,6 +21,10 @@ class MenuCategoryTests {
 
     private final long VALID_RESTAURANT_ID = 123;
     private final long INVALID_RESTAURANT_ID = 999;
+    
+    private final int RESTAURANT_NOT_FOUND = 901;
+    private final int RESTAURANT_MISMATCH = 902;
+    private final int CATEGORY_NOT_FOUND = 903;
 
     @BeforeEach
     void setUp() {
@@ -88,7 +91,7 @@ class MenuCategoryTests {
                 """, INVALID_RESTAURANT_ID))
             .post("/menu/{restaurantId}/categories", INVALID_RESTAURANT_ID)
             .then()
-            .statusCode(RESTAURANT_NOT_FOUND.getCode());
+            .statusCode(RESTAURANT_NOT_FOUND);
     }
 
     @Test
@@ -106,7 +109,7 @@ class MenuCategoryTests {
                 """, INVALID_RESTAURANT_ID))
             .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
             .then()
-            .statusCode(RESTAURANT_MISMATCH.getCode());
+            .statusCode(RESTAURANT_MISMATCH);
     }
 
     @Test
@@ -123,7 +126,7 @@ class MenuCategoryTests {
                 """)
             .put("/menu/{restaurantId}/categories/{categoryId}", VALID_RESTAURANT_ID, nonExistentCategoryId)
             .then()
-            .statusCode(CATEGORY_NOT_FOUND.getCode());
+            .statusCode(CATEGORY_NOT_FOUND);
     }
 
     @Test
@@ -133,7 +136,7 @@ class MenuCategoryTests {
         given()
             .delete("/menu/{restaurantId}/categories/{categoryId}", VALID_RESTAURANT_ID, nonExistentCategoryId)
             .then()
-            .statusCode(CATEGORY_NOT_FOUND.getCode());
+            .statusCode(CATEGORY_NOT_FOUND);
     }
 
     @Test
@@ -152,7 +155,7 @@ class MenuCategoryTests {
                 """)
             .put("/menu/{restaurantId}/categories/{categoryId}", INVALID_RESTAURANT_ID, categoryId)
             .then()
-            .statusCode(RESTAURANT_NOT_FOUND.getCode());
+            .statusCode(RESTAURANT_NOT_FOUND);
     }
 
     @Test
@@ -164,7 +167,7 @@ class MenuCategoryTests {
         given()
             .delete("/menu/{restaurantId}/categories/{categoryId}", INVALID_RESTAURANT_ID, categoryId)
             .then()
-            .statusCode(RESTAURANT_NOT_FOUND.getCode());
+            .statusCode(RESTAURANT_NOT_FOUND);
     }
 
     private String createTestCategory() {
