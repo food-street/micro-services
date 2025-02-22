@@ -91,6 +91,82 @@ class MenuCategoryTests {
             .statusCode(RESTAURANT_NOT_FOUND.getCode());
     }
 
+    @Test
+    void createCategoryWithMismatchedRestaurantId() {
+        given()
+            .contentType("application/json")
+            .body(String.format("""
+                {
+                    "name": "Test Category",
+                    "description": "Test Category Description",
+                    "restaurantId": %d,
+                    "displayOrder": 1,
+                    "isAvailable": true
+                }
+                """, INVALID_RESTAURANT_ID))
+            .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
+            .then()
+            .statusCode(RESTAURANT_MISMATCH.getCode());
+    }
+
+    @Test
+    void updateNonExistentCategory() {
+        String nonExistentCategoryId = "non-existent-id";
+
+        given()
+            .contentType("application/json")
+            .body("""
+                {
+                    "name": "Updated Category",
+                    "description": "Updated Category Description"
+                }
+                """)
+            .put("/menu/{restaurantId}/categories/{categoryId}", VALID_RESTAURANT_ID, nonExistentCategoryId)
+            .then()
+            .statusCode(CATEGORY_NOT_FOUND.getCode());
+    }
+
+    @Test
+    void deleteNonExistentCategory() {
+        String nonExistentCategoryId = "non-existent-id";
+
+        given()
+            .delete("/menu/{restaurantId}/categories/{categoryId}", VALID_RESTAURANT_ID, nonExistentCategoryId)
+            .then()
+            .statusCode(CATEGORY_NOT_FOUND.getCode());
+    }
+
+    @Test
+    void updateCategoryWithMismatchedRestaurantId() {
+        // First create a category
+        String categoryId = createTestCategory();
+
+        // Try to update it with a different restaurant ID
+        given()
+            .contentType("application/json")
+            .body("""
+                {
+                    "name": "Updated Category",
+                    "description": "Updated Category Description"
+                }
+                """)
+            .put("/menu/{restaurantId}/categories/{categoryId}", INVALID_RESTAURANT_ID, categoryId)
+            .then()
+            .statusCode(RESTAURANT_NOT_FOUND.getCode());
+    }
+
+    @Test
+    void deleteCategoryWithMismatchedRestaurantId() {
+        // First create a category
+        String categoryId = createTestCategory();
+
+        // Try to delete it with a different restaurant ID
+        given()
+            .delete("/menu/{restaurantId}/categories/{categoryId}", INVALID_RESTAURANT_ID, categoryId)
+            .then()
+            .statusCode(RESTAURANT_NOT_FOUND.getCode());
+    }
+
     private String createTestCategory() {
         return given()
             .contentType("application/json")
