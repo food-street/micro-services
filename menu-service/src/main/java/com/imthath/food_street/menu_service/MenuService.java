@@ -79,7 +79,7 @@ public class MenuService {
     public Item updateItem(long restaurantId, String itemId, UpdateItemRequest request) {
         verifyRestaurantExists(restaurantId);
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found"));
+                .orElseThrow(() -> new GenericException(ITEM_NOT_FOUND));
 
         if (restaurantId != item.getRestaurantId()) {
             throw new GenericException(RESTAURANT_MISMATCH);
