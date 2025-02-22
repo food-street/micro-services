@@ -14,16 +14,10 @@ import static org.hamcrest.Matchers.*;
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
-class MenuCategoryTests {
+class MenuCategoryTests extends MenuTests {
 
     @LocalServerPort
     private int port;
-
-    private final long VALID_RESTAURANT_ID = 123;
-    private final long INVALID_RESTAURANT_ID = 999;
-    
-    private final int RESTAURANT_NOT_FOUND = 901;
-    private final int RESTAURANT_MISMATCH = 902;
     private final int CATEGORY_NOT_FOUND = 903;
 
     @BeforeEach
@@ -168,28 +162,5 @@ class MenuCategoryTests {
             .delete("/menu/{restaurantId}/categories/{categoryId}", INVALID_RESTAURANT_ID, categoryId)
             .then()
             .statusCode(RESTAURANT_NOT_FOUND);
-    }
-
-    private String createTestCategory() {
-        return given()
-            .contentType("application/json")
-            .body(validCategoryRequestBody())
-            .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
-            .then()
-            .statusCode(201)
-            .extract()
-            .path("id");
-    }
-
-    private String validCategoryRequestBody() {
-        return String.format("""
-                {
-                    "name": "Test Category",
-                    "description": "Test Category Description",
-                    "restaurantId": %d,
-                    "displayOrder": 1,
-                    "isAvailable": true
-                }
-                """, VALID_RESTAURANT_ID);
     }
 }

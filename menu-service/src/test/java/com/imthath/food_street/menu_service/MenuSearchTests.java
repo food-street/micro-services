@@ -14,7 +14,7 @@ import static org.hamcrest.Matchers.*;
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
-class MenuSearchTests {
+class MenuSearchTests extends MenuTests {
 
     @LocalServerPort
     private int port;
@@ -67,22 +67,6 @@ class MenuSearchTests {
         createTestItem(categoryId, "Pepperoni Pizza", "Classic pizza with pepperoni");
     }
 
-    private String createTestCategory() {
-        return given()
-            .contentType("application/json")
-            .body("""
-                {
-                    "name": "Test Category",
-                    "description": "Test Category Description"
-                }
-                """)
-            .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
-            .then()
-            .statusCode(201)
-            .extract()
-            .path("id");
-    }
-
     private void createTestItem(String categoryId, String name, String description) {
         given()
             .contentType("application/json")
@@ -92,9 +76,11 @@ class MenuSearchTests {
                     "description": "%s",
                     "price": 9.99,
                     "categoryId": "%s",
-                    "imageUrl": "http://example.com/image.jpg"
+                    "imageUrl": "http://example.com/image.jpg",
+                    "restaurantId": %d,
+                    "displayOrder": 1
                 }
-                """, name, description, categoryId))
+                """, name, description, categoryId, VALID_RESTAURANT_ID))
             .post("/menu/{restaurantId}/items", VALID_RESTAURANT_ID)
             .then()
             .statusCode(201);

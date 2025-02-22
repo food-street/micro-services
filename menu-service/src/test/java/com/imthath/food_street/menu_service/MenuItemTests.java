@@ -14,16 +14,11 @@ import static org.hamcrest.Matchers.*;
 @Import(TestcontainersConfiguration.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
-class MenuItemTests {
+class MenuItemTests extends MenuTests {
 
     @LocalServerPort
     private int port;
 
-    private final long VALID_RESTAURANT_ID = 123;
-    private final long INVALID_RESTAURANT_ID = 999;
-
-    private final int RESTAURANT_NOT_FOUND = 901;
-    private final int RESTAURANT_MISMATCH = 902;
     private final int ITEM_NOT_FOUND = 904;
 
     private String categoryId;
@@ -66,7 +61,7 @@ class MenuItemTests {
 
     @Test
     void updateItem() {
-        var itemId = createTestItem();
+        var itemId = createTestItem(categoryId);
 
         given()
             .contentType("application/json")
@@ -89,7 +84,7 @@ class MenuItemTests {
 
     @Test
     void deleteItem() {
-        var itemId = createTestItem();
+        var itemId = createTestItem(categoryId);
 
         given()
             .delete("/menu/{restaurantId}/items/{itemId}", VALID_RESTAURANT_ID, itemId)
@@ -167,7 +162,7 @@ class MenuItemTests {
 
     @Test
     void updateItemWithMismatchedRestaurantId() {
-        String itemId = createTestItem();
+        String itemId = createTestItem(categoryId);
 
         given()
             .contentType("application/json")
@@ -185,55 +180,11 @@ class MenuItemTests {
 
     @Test
     void deleteItemWithMismatchedRestaurantId() {
-        String itemId = createTestItem();
+        String itemId = createTestItem(categoryId);
 
         given()
             .delete("/menu/{restaurantId}/items/{itemId}", INVALID_RESTAURANT_ID, itemId)
             .then()
             .statusCode(RESTAURANT_NOT_FOUND);
-    }
-
-    private String createTestCategory() {
-        return given()
-                .contentType("application/json")
-                .body(validCategoryRequestBody())
-                .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
-                .then()
-                .statusCode(201)
-                .extract()
-                .path("id");
-    }
-
-    private String validCategoryRequestBody() {
-        return String.format("""
-                {
-                    "name": "Test Category",
-                    "description": "Test Category Description",
-                    "restaurantId": %d,
-                    "displayOrder": 1,
-                    "isAvailable": true
-                }
-                """, VALID_RESTAURANT_ID);
-    }
-
-    private String createTestItem() {
-        return given()
-            .contentType("application/json")
-            .body(String.format("""
-                {
-                    "name": "Test Item",
-                    "description": "Test Description",
-                    "price": 9.99,
-                    "categoryId": "%s",
-                    "restaurantId": %d,
-                    "displayOrder": 1,
-                    "imageUrl": "http://example.com/image.jpg"
-                }
-                """, categoryId, VALID_RESTAURANT_ID))
-            .post("/menu/{restaurantId}/items", VALID_RESTAURANT_ID)
-            .then()
-            .statusCode(201)
-            .extract()
-            .path("id");
     }
 }
