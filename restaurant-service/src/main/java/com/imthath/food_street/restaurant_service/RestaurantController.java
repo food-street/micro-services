@@ -40,6 +40,11 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurant);
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkRestaurantExists(@RequestParam long id) {
+        return ResponseEntity.ok(restaurantService.existsById(id));
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<Restaurant> updateRestaurant(
             @PathVariable Long id,

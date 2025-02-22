@@ -82,4 +82,8 @@ public class RestaurantService {
             throw new GenericException(RestaurantError.COURT_NOT_FOUND);
         }
     }
+
+    public boolean existsById(Long id) {
+        return restaurantRepository.existsById(id);
+    }
 } 
