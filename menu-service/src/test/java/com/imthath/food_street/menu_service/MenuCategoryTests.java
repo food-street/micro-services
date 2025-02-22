@@ -8,6 +8,7 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
 
+import static com.imthath.food_street.menu_service.MenuError.*;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
@@ -76,15 +77,18 @@ class MenuCategoryTests {
     void createCategoryForInvalidRestaurant() {
         given()
             .contentType("application/json")
-            .body("""
+            .body(String.format("""
                 {
                     "name": "Test Category",
-                    "description": "Test Category Description"
+                    "description": "Test Category Description",
+                    "restaurantId": %d,
+                    "displayOrder": 1,
+                    "isAvailable": true
                 }
-                """)
+                """, INVALID_RESTAURANT_ID))
             .post("/menu/{restaurantId}/categories", INVALID_RESTAURANT_ID)
             .then()
-            .statusCode(404);
+            .statusCode(RESTAURANT_NOT_FOUND.getCode());
     }
 
     private String createTestCategory() {
