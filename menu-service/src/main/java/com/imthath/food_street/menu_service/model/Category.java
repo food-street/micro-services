@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @SuperBuilder
 @Document(collection = "categories")
+@NoArgsConstructor
 public class Category extends BaseEntity {
 }
 

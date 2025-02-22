@@ -2,6 +2,7 @@ package com.imthath.food_street.menu_service.model;
 
 import jakarta.persistence.MappedSuperclass;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -13,6 +14,7 @@ import java.util.Date;
 @SuperBuilder
 @Data
 @MappedSuperclass
+@NoArgsConstructor
 public abstract class BaseEntity {
     @Id
     private String id;
