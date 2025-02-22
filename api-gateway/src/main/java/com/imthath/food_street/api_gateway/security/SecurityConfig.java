@@ -10,6 +10,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authorization.AuthorizationDecision;
+import org.springframework.http.HttpMethod;
 
 import java.util.Arrays;
 
@@ -31,15 +32,15 @@ public class SecurityConfig  {
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        if (Arrays.asList(environment.getActiveProfiles()).contains("local")) {
-            System.out.println("setting up bean for security config in local profile");
-            return http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                    .anyRequest().permitAll()
-                )
-                .build();
-        }
+         if (Arrays.asList(environment.getActiveProfiles()).contains("local")) {
+             System.out.println("setting up bean for security config in local profile");
+             return http
+                 .csrf(AbstractHttpConfigurer::disable)
+                 .authorizeHttpRequests(auth -> auth
+                     .anyRequest().permitAll()
+                 )
+                 .build();
+         }
 
         System.out.println("setting up bean for security config in production/staging");
         return http
@@ -47,11 +48,19 @@ public class SecurityConfig  {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/restaurant/**", "/court/**", "/menu/**").permitAll()
                         .requestMatchers("/court/{id}").access((authentication, context) -> {
                             String id = context.getVariables().get("id");
                             UserAuthentication userAuth = (UserAuthentication) authentication.get();
                             return new AuthorizationDecision(
                                 id.equals(userAuth.entityId) && context.getRequest().isUserInRole(Role.FC_ADMIN.name())
+                            );
+                        })
+                        .requestMatchers("/restaurant/{id}").access((authentication, context) -> {
+                            String id = context.getVariables().get("id");
+                            UserAuthentication userAuth = (UserAuthentication) authentication.get();
+                            return new AuthorizationDecision(
+                                id.equals(userAuth.entityId) && context.getRequest().isUserInRole(Role.R_ADMIN.name())
                             );
                         })
                         .requestMatchers("/otp/validate").hasRole(Role.R_ADMIN.name())
