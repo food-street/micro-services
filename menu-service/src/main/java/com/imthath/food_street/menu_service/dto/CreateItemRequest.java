@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 
 public record CreateItemRequest(
     @NotNull(message = "Restaurant ID is required")
+    @Min(value = 1, message = "Restaurant ID must be greater than 0")
     long restaurantId,
 
     @NotBlank(message = "Category ID is required")
@@ -22,7 +23,7 @@ public record CreateItemRequest(
     String imageUrl,
 
     @NotNull(message = "Display order is required")
-    @Min(value = 0, message = "Display order must be non-negative")
+    @Min(value = 1, message = "Display order must be greater than 0")
     int displayOrder,
 
     @NotNull(message = "Availability status is required")

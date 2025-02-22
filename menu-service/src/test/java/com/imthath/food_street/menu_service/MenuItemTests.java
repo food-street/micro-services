@@ -20,7 +20,7 @@ class MenuItemTests {
     private int port;
 
     private final long VALID_RESTAURANT_ID = 123;
-    private final long INVALID_RESTAURANT_ID = 5943;
+    private final long INVALID_RESTAURANT_ID = 999;
     private String categoryId;
 
     @BeforeEach
@@ -45,9 +45,11 @@ class MenuItemTests {
                     "description": "Test Description",
                     "price": 9.99,
                     "categoryId": "%s",
+                    "restaurantId": %d,
+                    "displayOrder": 1,
                     "imageUrl": "http://example.com/image.jpg"
                 }
-                """, categoryId))
+                """, categoryId, VALID_RESTAURANT_ID))
             .post("/menu/{restaurantId}/items", VALID_RESTAURANT_ID)
             .then()
             .statusCode(201)
@@ -92,18 +94,25 @@ class MenuItemTests {
 
     private String createTestCategory() {
         return given()
-            .contentType("application/json")
-            .body("""
+                .contentType("application/json")
+                .body(validCategoryRequestBody())
+                .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
+                .then()
+                .statusCode(201)
+                .extract()
+                .path("id");
+    }
+
+    private String validCategoryRequestBody() {
+        return String.format("""
                 {
                     "name": "Test Category",
-                    "description": "Test Category Description"
+                    "description": "Test Category Description",
+                    "restaurantId": %d,
+                    "displayOrder": 1,
+                    "isAvailable": true
                 }
-                """)
-            .post("/menu/{restaurantId}/categories", VALID_RESTAURANT_ID)
-            .then()
-            .statusCode(201)
-            .extract()
-            .path("id");
+                """, VALID_RESTAURANT_ID);
     }
 
     private String createTestItem() {
@@ -115,9 +124,10 @@ class MenuItemTests {
                     "description": "Test Description",
                     "price": 9.99,
                     "categoryId": "%s",
+                    "restaurantId": %d,
                     "imageUrl": "http://example.com/image.jpg"
                 }
-                """, categoryId))
+                """, categoryId, VALID_RESTAURANT_ID))
             .post("/menu/{restaurantId}/items", VALID_RESTAURANT_ID)
             .then()
             .statusCode(201)
