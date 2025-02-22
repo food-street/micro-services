@@ -125,6 +125,7 @@ class MenuItemTests {
                     "price": 9.99,
                     "categoryId": "%s",
                     "restaurantId": %d,
+                    "displayOrder": 1,
                     "imageUrl": "http://example.com/image.jpg"
                 }
                 """, categoryId, VALID_RESTAURANT_ID))
