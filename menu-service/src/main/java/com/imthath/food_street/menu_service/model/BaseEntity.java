@@ -17,12 +17,12 @@ public abstract class BaseEntity {
     @Id
     private String id;
 
-    private long restaurantId;    // Required
+    private long restaurantId;      // Required
     private String name;            // Required
     private String description;     // Optional
     private String imageUrl;        // Optional
     private boolean isAvailable;    // Required
-    private int displayOrder;   // Required
+    private int displayOrder;       // Required
 
     @CreatedDate
     @Field("created_at")
