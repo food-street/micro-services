@@ -24,14 +24,13 @@ public class RestaurantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Restaurant>> getAllRestaurants() {
-        List<Restaurant> restaurants = restaurantService.getAllRestaurants();
-        return ResponseEntity.ok(restaurants);
-    }
-
-    @GetMapping("/court/{courtId}")
-    public ResponseEntity<List<Restaurant>> getRestaurantsByCourtId(@PathVariable Long courtId) throws Exception {
-        List<Restaurant> restaurants = restaurantService.getRestaurantsByCourtId(courtId);
+    public ResponseEntity<List<Restaurant>> getRestaurants(@RequestParam(required = false) Long courtId) throws Exception {
+        List<Restaurant> restaurants;
+        if (courtId != null) {
+            restaurants = restaurantService.getRestaurantsByCourtId(courtId);
+        } else {
+            restaurants = restaurantService.getAllRestaurants();
+        }
         return ResponseEntity.ok(restaurants);
     }
 
@@ -54,4 +53,4 @@ public class RestaurantController {
         restaurantService.deleteRestaurant(id);
         return ResponseEntity.noContent().build();
     }
-} 
+}

@@ -96,7 +96,7 @@ class RestaurantServiceApplicationTests {
         createSampleRestaurant();
 
         given()
-                .get("/restaurant/court/{courtId}", VALID_COURT_ID)
+                .get("/restaurant?courtId={courtId}", VALID_COURT_ID)
                 .then()
                 .statusCode(200)
                 .body("size()", greaterThanOrEqualTo(2));
