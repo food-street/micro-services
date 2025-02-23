@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
 
 import java.util.*;
 
@@ -36,12 +34,14 @@ public class MenuService {
     // Get menu of a restaurant - categories with nested items
     public List<CategoryResponse> getMenuByRestaurant(long restaurantId) {
         verifyRestaurantExists(restaurantId);
-        List<Category> categories = categoryRepository.findByRestaurantIdOrderByDisplayOrder(restaurantId);
+        List<Category> categories = categoryRepository.findByRestaurantIdAndIsAvailableOrderByDisplayOrder(restaurantId, true);
         List<CategoryResponse> menu = new ArrayList<>();
 
         for (Category category : categories) {
-            List<Item> items = itemRepository.findByRestaurantIdAndCategoryIdOrderByDisplayOrder(restaurantId, category.getId());
-            menu.add(CategoryResponse.from(category, items));
+            List<Item> items = itemRepository.findByRestaurantIdAndCategoryIdAndIsAvailableOrderByDisplayOrder(restaurantId, category.getId(), true);
+            if (!items.isEmpty()) {
+                menu.add(CategoryResponse.from(category, items));
+            }
         }
 
         return menu;

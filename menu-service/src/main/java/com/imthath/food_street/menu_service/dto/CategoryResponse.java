@@ -12,7 +12,6 @@ public record CategoryResponse(
     long restaurantId,
     String description,
     int displayOrder,
-    boolean isAvailable,
     Date createdAt,
     Date updatedAt,
     List<Item> items
@@ -24,7 +23,6 @@ public record CategoryResponse(
             category.getRestaurantId(),
             category.getDescription(),
             category.getDisplayOrder(),
-            category.isAvailable(),
             category.getCreatedAt(),
             category.getUpdatedAt(),
             items
