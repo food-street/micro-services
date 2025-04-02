@@ -4,7 +4,6 @@ import com.imthath.food_street.restaurant_service.dto.RestaurantRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,46 +15,43 @@ public class RestaurantController {
     private RestaurantService restaurantService;
 
     @PostMapping
-    public ResponseEntity<Restaurant> createRestaurant(@Valid @RequestBody RestaurantRequest request) throws Exception {
-        Restaurant restaurant = restaurantService.createRestaurant(request);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(restaurant);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Restaurant createRestaurant(@Valid @RequestBody RestaurantRequest request) throws Exception {
+        return restaurantService.createRestaurant(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<Restaurant>> getRestaurants(@RequestParam(required = false) Long courtId) throws Exception {
-        List<Restaurant> restaurants;
+    @ResponseStatus(HttpStatus.OK)
+    public List<Restaurant> getRestaurants(@RequestParam(required = false) Long courtId) throws Exception {
         if (courtId != null) {
-            restaurants = restaurantService.getRestaurantsByCourtId(courtId);
-        } else {
-            restaurants = restaurantService.getAllRestaurants();
+            return restaurantService.getRestaurantsByCourtId(courtId);
         }
-        return ResponseEntity.ok(restaurants);
+        return restaurantService.getAllRestaurants();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Restaurant> getRestaurantById(@PathVariable Long id) throws Exception {
-        Restaurant restaurant = restaurantService.getRestaurantById(id);
-        return ResponseEntity.ok(restaurant);
+    @ResponseStatus(HttpStatus.OK)
+    public Restaurant getRestaurantById(@PathVariable Long id) throws Exception {
+        return restaurantService.getRestaurantById(id);
     }
 
     @GetMapping("/check")
-    public ResponseEntity<Boolean> checkRestaurantExists(@RequestParam long id) {
-        return ResponseEntity.ok(restaurantService.existsById(id));
+    @ResponseStatus(HttpStatus.OK)
+    public boolean checkRestaurantExists(@RequestParam long id) {
+        return restaurantService.existsById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Restaurant> updateRestaurant(
+    @ResponseStatus(HttpStatus.OK)
+    public Restaurant updateRestaurant(
             @PathVariable Long id,
             @Valid @RequestBody RestaurantRequest request) throws Exception {
-        Restaurant updated = restaurantService.updateRestaurant(id, request);
-        return ResponseEntity.ok(updated);
+        return restaurantService.updateRestaurant(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long id) throws Exception {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRestaurant(@PathVariable Long id) throws Exception {
         restaurantService.deleteRestaurant(id);
-        return ResponseEntity.noContent().build();
     }
 }

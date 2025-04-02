@@ -29,19 +29,21 @@ public class MenuController {
     }
 
     @GetMapping("/{restaurantId}/search")
-    public ResponseEntity<Page<Item>> searchInRestaurant(
+    @ResponseStatus(HttpStatus.OK)
+    public Page<Item> searchInRestaurant(
             @PathVariable long restaurantId,
             @RequestParam String keyword,
             Pageable pageable) {
-        return ResponseEntity.ok(menuService.searchMenuInRestaurant(restaurantId, keyword, pageable));
+        return menuService.searchMenuInRestaurant(restaurantId, keyword, pageable);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<Item>> searchInRestaurants(
+    @ResponseStatus(HttpStatus.OK)
+    public Page<Item> searchInRestaurants(
             @RequestParam List<Long> restaurantIds,
             @RequestParam String keyword,
             Pageable pageable) {
-        return ResponseEntity.ok(menuService.searchMenuInRestaurants(restaurantIds, keyword, pageable));
+        return menuService.searchMenuInRestaurants(restaurantIds, keyword, pageable);
     }
 
     @PostMapping("/{restaurantId}/items")

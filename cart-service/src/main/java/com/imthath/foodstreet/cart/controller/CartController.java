@@ -4,7 +4,7 @@ import com.imthath.foodstreet.cart.model.Cart;
 import com.imthath.foodstreet.cart.model.CartItem;
 import com.imthath.foodstreet.cart.service.CartService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,36 +15,40 @@ public class CartController {
     private final CartService cartService;
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Cart> getCart(@PathVariable String userId) {
-        return ResponseEntity.ok(cartService.getCart(userId));
+    @ResponseStatus(HttpStatus.OK)
+    public Cart getCart(@PathVariable String userId) {
+        return cartService.getCart(userId);
     }
 
     @PostMapping("/{userId}/items")
-    public ResponseEntity<Cart> addItem(
+    @ResponseStatus(HttpStatus.OK)
+    public Cart addItem(
             @PathVariable String userId,
             @RequestParam String foodCourtId,
             @RequestBody CartItem item) {
-        return ResponseEntity.ok(cartService.addItemToCart(userId, foodCourtId, item));
+        return cartService.addItemToCart(userId, foodCourtId, item);
     }
 
     @PutMapping("/{userId}/items/{menuItemId}")
-    public ResponseEntity<Cart> updateItemQuantity(
+    @ResponseStatus(HttpStatus.OK)
+    public Cart updateItemQuantity(
             @PathVariable String userId,
             @PathVariable String menuItemId,
             @RequestParam int quantity) {
-        return ResponseEntity.ok(cartService.updateItemQuantity(userId, menuItemId, quantity));
+        return cartService.updateItemQuantity(userId, menuItemId, quantity);
     }
 
     @DeleteMapping("/{userId}/items/{menuItemId}")
-    public ResponseEntity<Cart> removeItem(
+    @ResponseStatus(HttpStatus.OK)
+    public Cart removeItem(
             @PathVariable String userId,
             @PathVariable String menuItemId) {
-        return ResponseEntity.ok(cartService.removeItem(userId, menuItemId));
+        return cartService.removeItem(userId, menuItemId);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> clearCart(@PathVariable String userId) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void clearCart(@PathVariable String userId) {
         cartService.clearCart(userId);
-        return ResponseEntity.noContent().build();
     }
 }

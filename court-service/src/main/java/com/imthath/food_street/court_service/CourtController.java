@@ -3,7 +3,6 @@ package com.imthath.food_street.court_service;
 import com.imthath.food_street.court_service.dto.CourtRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 
@@ -16,42 +15,40 @@ public class CourtController {
     private CourtService courtService;
 
     @PostMapping
-    public ResponseEntity<Court> createCourt(@Valid @RequestBody CourtRequest request) {
-        Court court = courtService.createCourt(request);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(court);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Court createCourt(@Valid @RequestBody CourtRequest request) {
+        return courtService.createCourt(request);
     }
 
     @GetMapping
-    public ResponseEntity<List<Court>> getAllCourts() {
-        List<Court> courts = courtService.getAllCourts();
-        return ResponseEntity.ok(courts);
+    @ResponseStatus(HttpStatus.OK)
+    public List<Court> getAllCourts() {
+        return courtService.getAllCourts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Court> getCourtById(@PathVariable Long id) throws Exception {
-        Court court = courtService.getCourtById(id);
-        return ResponseEntity.ok(court);
+    @ResponseStatus(HttpStatus.OK)
+    public Court getCourtById(@PathVariable Long id) throws Exception {
+        return courtService.getCourtById(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Court> updateCourt(
+    @ResponseStatus(HttpStatus.OK)
+    public Court updateCourt(
             @PathVariable Long id,
             @Valid @RequestBody CourtRequest request) throws Exception {
-        Court updated = courtService.updateCourt(id, request);
-        return ResponseEntity.ok(updated);
+        return courtService.updateCourt(id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCourt(@PathVariable Long id) throws Exception {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteCourt(@PathVariable Long id) throws Exception {
         courtService.deleteCourt(id);
-        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/check")
-    public ResponseEntity<Boolean> checkCourtExists(@RequestParam Long id) {
-        boolean exists = courtService.existsById(id);
-        return ResponseEntity.ok(exists);
+    @ResponseStatus(HttpStatus.OK)
+    public boolean checkCourtExists(@RequestParam Long id) {
+        return courtService.existsById(id);
     }
 }
