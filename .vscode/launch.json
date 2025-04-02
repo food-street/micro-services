@@ -100,6 +100,16 @@
             "projectName": "image-service",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Cart Service",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.imthath.foodstreet.cart.CartServiceApplication",
+            "projectName": "cart-service",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
         }
     ]
 }
