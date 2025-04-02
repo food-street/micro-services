@@ -1,0 +1,14 @@
+services:
+  redis:
+    image: redis:7.2-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./data/redis:/data
+    command: redis-server --appendonly yes
+    networks:
+      - cart-network
+
+networks:
+  cart-network:
+    driver: bridge
