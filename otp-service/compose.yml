@@ -1,6 +1,6 @@
 services:
   otp-cache:
-    image: redis
+    image: redis:7.4.2
     container_name: otp-cache
     ports:
       - "6379:6379"
