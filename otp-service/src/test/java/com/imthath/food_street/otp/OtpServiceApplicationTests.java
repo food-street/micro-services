@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.http.HttpStatus;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -31,14 +32,14 @@ class OtpServiceApplicationTests {
 				.given()
 				.post("/otp/generate")
 				.then()
-				.statusCode(400);
+				.statusCode(HttpStatus.BAD_REQUEST.value());
 
 		RestAssured
 				.given()
 				.param("identifier", "test-bad-request")
 				.put("/otp/validate")
 				.then()
-				.statusCode(400);
+				.statusCode(HttpStatus.BAD_REQUEST.value());
 	}
 
 	@Test
@@ -49,7 +50,7 @@ class OtpServiceApplicationTests {
 				.param("otp", "1234")
 				.put("/otp/validate")
 				.then()
-				.statusCode(428);
+				.statusCode(HttpStatus.PRECONDITION_REQUIRED.value());
 	}
 
 	@Test
@@ -59,7 +60,7 @@ class OtpServiceApplicationTests {
 				.param("identifier", "test-invalid")
 				.post("/otp/generate")
 				.then()
-				.statusCode(201);
+				.statusCode(HttpStatus.CREATED.value());
 
 		RestAssured
 				.given()
@@ -67,7 +68,7 @@ class OtpServiceApplicationTests {
 				.param("otp", "123456")
 				.put("/otp/validate")
 				.then()
-				.statusCode(409);
+				.statusCode(HttpStatus.CONFLICT.value());
 	}
 
 	@Test
@@ -77,10 +78,12 @@ class OtpServiceApplicationTests {
 				.param("identifier", "test-valid")
 				.post("/otp/generate")
 				.then()
-				.statusCode(201)
+				.statusCode(HttpStatus.CREATED.value())
 				.extract()
 				.body()
-				.asString();
+				.jsonPath()
+				.get("otp")
+				.toString();
 
 		RestAssured
 				.given()
@@ -88,7 +91,7 @@ class OtpServiceApplicationTests {
 				.param("otp", otp)
 				.put("/otp/validate")
 				.then()
-				.statusCode(202);
+				.statusCode(HttpStatus.ACCEPTED.value());
 
 		RestAssured
 				.given()
@@ -96,6 +99,6 @@ class OtpServiceApplicationTests {
 				.param("otp", otp)
 				.put("/otp/validate")
 				.then()
-				.statusCode(428);
+				.statusCode(HttpStatus.PRECONDITION_REQUIRED.value());
 	}
 }
