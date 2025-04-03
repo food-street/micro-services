@@ -2,7 +2,7 @@ package com.imthath.foodstreet.cart.model;
 
 import lombok.Data;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,7 +12,7 @@ public class Cart implements Serializable {
     private String userId;
     private String foodCourtId;
     private List<CartItem> items = new ArrayList<>();
-    private LocalDateTime lastModified;
+    private Instant lastModified;
     private double total;
     
     public void addItem(CartItem item) {
@@ -53,6 +53,6 @@ public class Cart implements Serializable {
         this.total = items.stream()
             .mapToDouble(item -> item.getPrice() * item.getQuantity())
             .sum();
-        this.lastModified = LocalDateTime.now();
+        this.lastModified = Instant.now();
     }
 }
