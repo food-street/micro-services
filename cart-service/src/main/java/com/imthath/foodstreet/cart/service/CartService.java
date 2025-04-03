@@ -34,12 +34,10 @@ public class CartService {
                 throw new GenericException(CartError.CART_NOT_FOUND);
             }
             return objectMapper.convertValue(cartObj, Cart.class);
-        } catch (IllegalArgumentException e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
         } catch (GenericException e) {
             throw e;
         } catch (Exception e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
+            throw new GenericException(CartError.CART_READ_FAILED);
         }
     }
     
@@ -48,7 +46,7 @@ public class CartService {
             Object cartObj = redisTemplate.opsForValue().get(getCartKey(userId));
             return cartObj != null ? objectMapper.convertValue(cartObj, Cart.class) : new Cart();
         } catch (Exception e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
+            throw new GenericException(CartError.CART_READ_FAILED);
         }
     }
     
@@ -57,77 +55,52 @@ public class CartService {
             String key = getCartKey(userId);
             redisTemplate.opsForValue().set(key, cart, Duration.ofHours(cartExpiryHours));
         } catch (Exception e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
+            throw new GenericException(CartError.CART_SAVE_FAILED);
         }
     }
     
     public Cart addItemToCart(String userId, String foodCourtId, CartItem item) {
-        if (item.getQuantity() <= 0) {
-            throw new GenericException(CartError.INVALID_QUANTITY);
+        Cart cart = getCartOrCreate(userId);
+        if (cart.getFoodCourtId() == null) {
+            cart.setFoodCourtId(foodCourtId);
+            cart.setUserId(userId);
+        } else if (!cart.getFoodCourtId().equals(foodCourtId)) {
+            throw new GenericException(CartError.DIFFERENT_FOOD_COURT_ITEMS);
         }
-
-        try {
-            Cart cart = getCartOrCreate(userId);
-            if (cart.getFoodCourtId() == null) {
-                cart.setFoodCourtId(foodCourtId);
-                cart.setUserId(userId);
-            } else if (!cart.getFoodCourtId().equals(foodCourtId)) {
-                throw new GenericException(CartError.DIFFERENT_FOOD_COURT_ITEMS);
-            }
-            
-            cart.addItem(item);
-            saveCart(userId, cart);
-            return cart;
-        } catch (GenericException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
-        }
+        
+        cart.addItem(item);
+        saveCart(userId, cart);
+        return cart;
+        
     }
     
     public Cart updateItemQuantity(String userId, String menuItemId, int quantity) {
-        if (quantity < 0) {
-            throw new GenericException(CartError.INVALID_QUANTITY);
+        Cart cart = getCart(userId);
+        if (!cart.hasItem(menuItemId)) {
+            throw new GenericException(CartError.ITEM_NOT_FOUND_IN_CART);
         }
-
-        try {
-            Cart cart = getCart(userId);
-            if (!cart.hasItem(menuItemId)) {
-                throw new GenericException(CartError.ITEM_NOT_FOUND_IN_CART);
-            }
-            
-            cart.updateItemQuantity(menuItemId, quantity);
-            saveCart(userId, cart);
-            return cart;
-        } catch (GenericException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
-        }
+        
+        cart.updateItemQuantity(menuItemId, quantity);
+        saveCart(userId, cart);
+        return cart;
     }
     
     public Cart removeItem(String userId, String menuItemId) {
-        try {
-            Cart cart = getCart(userId);
-            if (!cart.hasItem(menuItemId)) {
-                throw new GenericException(CartError.ITEM_NOT_FOUND_IN_CART);
-            }
-            
-            cart.removeItem(menuItemId);
-            saveCart(userId, cart);
-            return cart;
-        } catch (GenericException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
+        Cart cart = getCart(userId);
+        if (!cart.hasItem(menuItemId)) {
+            throw new GenericException(CartError.ITEM_NOT_FOUND_IN_CART);
         }
+        
+        cart.removeItem(menuItemId);
+        saveCart(userId, cart);
+        return cart;
     }
     
     public void clearCart(String userId) {
         try {
             redisTemplate.delete(getCartKey(userId));
         } catch (Exception e) {
-            throw new GenericException(CartError.CART_OPERATION_FAILED);
+            throw new GenericException(CartError.CART_DELETE_FAILED);
         }
     }
 }

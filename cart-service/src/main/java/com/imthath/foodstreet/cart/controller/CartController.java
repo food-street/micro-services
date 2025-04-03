@@ -3,13 +3,17 @@ package com.imthath.foodstreet.cart.controller;
 import com.imthath.foodstreet.cart.model.Cart;
 import com.imthath.foodstreet.cart.model.CartItem;
 import com.imthath.foodstreet.cart.service.CartService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cart")
 @RequiredArgsConstructor
+@Validated
 public class CartController {
 
     private final CartService cartService;
@@ -25,7 +29,7 @@ public class CartController {
     public Cart addItem(
             @PathVariable String userId,
             @RequestParam String foodCourtId,
-            @RequestBody CartItem item) {
+            @Valid @RequestBody CartItem item) {
         return cartService.addItemToCart(userId, foodCourtId, item);
     }
 
@@ -34,7 +38,7 @@ public class CartController {
     public Cart updateItemQuantity(
             @PathVariable String userId,
             @PathVariable String menuItemId,
-            @RequestParam int quantity) {
+            @Positive(message = "Quantity must be greater than 0") @RequestParam int quantity) {
         return cartService.updateItemQuantity(userId, menuItemId, quantity);
     }
 

@@ -36,6 +36,7 @@ class CartServiceApplicationTests {
     private final String USER_ID = "test-user";
     private final String FOOD_COURT_ID = "test-court";
     private final String MENU_ITEM_ID = "test-item";
+    private final String RESTAURANT_ID = "test-restaurant";
     private final String DIFFERENT_FOOD_COURT_ID = "different-court";
 
     @BeforeEach
@@ -63,11 +64,12 @@ class CartServiceApplicationTests {
                 .body("""
                     {
                         "menuItemId": "%s",
+                        "restaurantId": "%s",
                         "name": "Test Item",
                         "price": 10.99,
                         "quantity": 2
                     }
-                    """.formatted(MENU_ITEM_ID))
+                    """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
                 .post("/cart/{userId}/items", USER_ID)
                 .then()
                 .statusCode(200)
@@ -75,10 +77,46 @@ class CartServiceApplicationTests {
                 .body("foodCourtId", equalTo(FOOD_COURT_ID))
                 .body("items", hasSize(1))
                 .body("items[0].menuItemId", equalTo(MENU_ITEM_ID))
+                .body("items[0].restaurantId", equalTo(RESTAURANT_ID))
                 .body("items[0].name", equalTo("Test Item"))
                 .body("items[0].price", equalTo(10.99f))
                 .body("items[0].quantity", equalTo(2))
                 .body("total", equalTo(21.98f));
+    }
+
+    @Test
+    void addItemWithMissingRequiredFields() {
+        given()
+                .contentType("application/json")
+                .queryParam("foodCourtId", FOOD_COURT_ID)
+                .body("""
+                    {
+                        "price": 10.99,
+                        "quantity": 1
+                    }
+                    """)
+                .post("/cart/{userId}/items", USER_ID)
+                .then()
+                .statusCode(400);
+    }
+
+    @Test
+    void addItemWithInvalidPrice() {
+        given()
+                .contentType("application/json")
+                .queryParam("foodCourtId", FOOD_COURT_ID)
+                .body("""
+                    {
+                        "menuItemId": "%s",
+                        "restaurantId": "%s",
+                        "name": "Test Item",
+                        "price": -10.99,
+                        "quantity": 1
+                    }
+                    """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
+                .post("/cart/{userId}/items", USER_ID)
+                .then()
+                .statusCode(400);
     }
 
     @Test
@@ -89,14 +127,15 @@ class CartServiceApplicationTests {
                 .body("""
                     {
                         "menuItemId": "%s",
+                        "restaurantId": "%s",
                         "name": "Test Item",
                         "price": 10.99,
                         "quantity": 0
                     }
-                    """.formatted(MENU_ITEM_ID))
+                    """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
                 .post("/cart/{userId}/items", USER_ID)
                 .then()
-                .statusCode(INVALID_QUANTITY.getCode());
+                .statusCode(400);
     }
 
     @Test
@@ -111,6 +150,7 @@ class CartServiceApplicationTests {
                 .body("""
                     {
                         "menuItemId": "different-item",
+                        "restaurantId": "different-restaurant",
                         "name": "Different Item",
                         "price": 15.99,
                         "quantity": 1
@@ -151,7 +191,7 @@ class CartServiceApplicationTests {
                 .queryParam("quantity", -1)
                 .put("/cart/{userId}/items/{menuItemId}", USER_ID, MENU_ITEM_ID)
                 .then()
-                .statusCode(INVALID_QUANTITY.getCode());
+                .statusCode(400);
     }
 
     @Test
@@ -197,11 +237,12 @@ class CartServiceApplicationTests {
                 .body("""
                     {
                         "menuItemId": "%s",
+                        "restaurantId": "%s",
                         "name": "Test Item",
                         "price": 10.99,
                         "quantity": 2
                     }
-                    """.formatted(MENU_ITEM_ID))
+                    """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
                 .post("/cart/{userId}/items", USER_ID);
     }
 }
