@@ -25,7 +25,7 @@ public class CartController {
     }
 
     @PostMapping("/{userId}/items")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public Cart addItem(
             @PathVariable String userId,
             @RequestParam String foodCourtId,
@@ -34,7 +34,7 @@ public class CartController {
     }
 
     @PutMapping("/{userId}/items/{menuItemId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public Cart updateItemQuantity(
             @PathVariable String userId,
             @PathVariable String menuItemId,
@@ -43,7 +43,7 @@ public class CartController {
     }
 
     @DeleteMapping("/{userId}/items/{menuItemId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public Cart removeItem(
             @PathVariable String userId,
             @PathVariable String menuItemId) {

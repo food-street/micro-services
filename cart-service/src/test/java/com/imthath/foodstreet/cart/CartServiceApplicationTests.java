@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
@@ -72,7 +73,7 @@ class CartServiceApplicationTests {
                     """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
                 .post("/cart/{userId}/items", USER_ID)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.CREATED.value())
                 .body("userId", equalTo(USER_ID))
                 .body("foodCourtId", equalTo(FOOD_COURT_ID))
                 .body("items", hasSize(1))
@@ -97,7 +98,7 @@ class CartServiceApplicationTests {
                     """)
                 .post("/cart/{userId}/items", USER_ID)
                 .then()
-                .statusCode(400);
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -116,7 +117,7 @@ class CartServiceApplicationTests {
                     """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
                 .post("/cart/{userId}/items", USER_ID)
                 .then()
-                .statusCode(400);
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -135,7 +136,7 @@ class CartServiceApplicationTests {
                     """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
                 .post("/cart/{userId}/items", USER_ID)
                 .then()
-                .statusCode(400);
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -169,7 +170,7 @@ class CartServiceApplicationTests {
                 .queryParam("quantity", 5)
                 .put("/cart/{userId}/items/{menuItemId}", USER_ID, MENU_ITEM_ID)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.ACCEPTED.value())
                 .body("items[0].quantity", equalTo(5))
                 .body("total", equalTo(54.95f));
     }
@@ -191,7 +192,7 @@ class CartServiceApplicationTests {
                 .queryParam("quantity", -1)
                 .put("/cart/{userId}/items/{menuItemId}", USER_ID, MENU_ITEM_ID)
                 .then()
-                .statusCode(400);
+                .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
@@ -201,7 +202,7 @@ class CartServiceApplicationTests {
         given()
                 .delete("/cart/{userId}/items/{menuItemId}", USER_ID, MENU_ITEM_ID)
                 .then()
-                .statusCode(200)
+                .statusCode(HttpStatus.ACCEPTED.value())
                 .body("items", hasSize(0))
                 .body("total", equalTo(0.0f));
     }
@@ -221,7 +222,7 @@ class CartServiceApplicationTests {
         given()
                 .delete("/cart/{userId}", USER_ID)
                 .then()
-                .statusCode(204);
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
         // Verify cart is empty
         given()
@@ -243,6 +244,8 @@ class CartServiceApplicationTests {
                         "quantity": 2
                     }
                     """.formatted(MENU_ITEM_ID, RESTAURANT_ID))
-                .post("/cart/{userId}/items", USER_ID);
+                .post("/cart/{userId}/items", USER_ID)
+                .then()
+                .statusCode(HttpStatus.CREATED.value());
     }
 }
