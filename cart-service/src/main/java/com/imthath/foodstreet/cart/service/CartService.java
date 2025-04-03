@@ -1,5 +1,6 @@
 package com.imthath.foodstreet.cart.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.imthath.foodstreet.cart.error.CartError;
 import com.imthath.foodstreet.cart.model.Cart;
 import com.imthath.foodstreet.cart.model.CartItem;
@@ -16,6 +17,7 @@ import java.time.Duration;
 public class CartService {
     
     private final RedisTemplate<String, Object> redisTemplate;
+    private final ObjectMapper objectMapper;
     private static final String CART_KEY_PREFIX = "cart:";
     
     @Value("${cart.expiry.hours}")
@@ -31,7 +33,9 @@ public class CartService {
             if (cartObj == null) {
                 throw new GenericException(CartError.CART_NOT_FOUND);
             }
-            return (Cart) cartObj;
+            return objectMapper.convertValue(cartObj, Cart.class);
+        } catch (IllegalArgumentException e) {
+            throw new GenericException(CartError.CART_OPERATION_FAILED);
         } catch (GenericException e) {
             throw e;
         } catch (Exception e) {
@@ -42,7 +46,7 @@ public class CartService {
     public Cart getCartOrCreate(String userId) {
         try {
             Object cartObj = redisTemplate.opsForValue().get(getCartKey(userId));
-            return cartObj != null ? (Cart) cartObj : new Cart();
+            return cartObj != null ? objectMapper.convertValue(cartObj, Cart.class) : new Cart();
         } catch (Exception e) {
             throw new GenericException(CartError.CART_OPERATION_FAILED);
         }
