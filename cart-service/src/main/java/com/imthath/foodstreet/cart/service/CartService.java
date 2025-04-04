@@ -82,17 +82,9 @@ public class CartService {
         
         cart.updateItemQuantity(menuItemId, quantity);
         saveCart(userId, cart);
-        return cart;
-    }
-    
-    public Cart removeItem(String userId, String menuItemId) {
-        Cart cart = getCart(userId);
-        if (!cart.hasItem(menuItemId)) {
-            throw new GenericException(CartError.ITEM_NOT_FOUND_IN_CART);
+        if (cart.isEmpty()) {
+            clearCart(userId);
         }
-        
-        cart.removeItem(menuItemId);
-        saveCart(userId, cart);
         return cart;
     }
     

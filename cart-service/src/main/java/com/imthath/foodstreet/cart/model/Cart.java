@@ -1,5 +1,6 @@
 package com.imthath.foodstreet.cart.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import java.io.Serializable;
 import java.time.Instant;
@@ -29,11 +30,6 @@ public class Cart implements Serializable {
         updateTotal();
     }
     
-    public void removeItem(String menuItemId) {
-        items.removeIf(item -> item.getMenuItemId().equals(menuItemId));
-        updateTotal();
-    }
-    
     public void updateItemQuantity(String menuItemId, int quantity) {
         items.stream()
                 .filter(i -> i.getMenuItemId().equals(menuItemId))
@@ -47,6 +43,11 @@ public class Cart implements Serializable {
     
     public boolean hasItem(String menuItemId) {
         return items.stream().anyMatch(item -> item.getMenuItemId().equals(menuItemId));
+    }
+
+    @JsonIgnore
+    public boolean isEmpty() {
+        return items.isEmpty();
     }
     
     private void updateTotal() {

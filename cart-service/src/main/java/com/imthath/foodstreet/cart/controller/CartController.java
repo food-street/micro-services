@@ -4,8 +4,9 @@ import com.imthath.foodstreet.cart.model.Cart;
 import com.imthath.foodstreet.cart.model.CartItem;
 import com.imthath.foodstreet.cart.service.CartService;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -34,20 +35,17 @@ public class CartController {
     }
 
     @PutMapping("/{userId}/items/{menuItemId}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public Cart updateItemQuantity(
+    public ResponseEntity<Cart> updateItemQuantity(
             @PathVariable String userId,
             @PathVariable String menuItemId,
-            @Positive(message = "Quantity must be greater than 0") @RequestParam int quantity) {
-        return cartService.updateItemQuantity(userId, menuItemId, quantity);
-    }
-
-    @DeleteMapping("/{userId}/items/{menuItemId}")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public Cart removeItem(
-            @PathVariable String userId,
-            @PathVariable String menuItemId) {
-        return cartService.removeItem(userId, menuItemId);
+            @PositiveOrZero(message = "Quantity must be greater than or equal to 0") @RequestParam int quantity) {
+        Cart cart = cartService.updateItemQuantity(userId, menuItemId, quantity);
+        if (cart.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
+                .body(cart);
     }
 
     @DeleteMapping("/{userId}")

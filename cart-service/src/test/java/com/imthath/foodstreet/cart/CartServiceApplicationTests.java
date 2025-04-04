@@ -172,16 +172,18 @@ class CartServiceApplicationTests {
                 .then()
                 .statusCode(HttpStatus.ACCEPTED.value())
                 .body("items[0].quantity", equalTo(5))
-                .body("total", equalTo(54.95f));
+                .body("total", equalTo(54.95f)); // sample item price is 10.99
     }
 
     @Test
     void updateNonExistentItem() {
+        addSampleItem();
+
         given()
                 .queryParam("quantity", 5)
                 .put("/cart/{userId}/items/{menuItemId}", USER_ID, "non-existent")
                 .then()
-                .statusCode(CART_NOT_FOUND.getCode());
+                .statusCode(ITEM_NOT_FOUND_IN_CART.getCode());
     }
 
     @Test
@@ -200,19 +202,12 @@ class CartServiceApplicationTests {
         addSampleItem();
 
         given()
-                .delete("/cart/{userId}/items/{menuItemId}", USER_ID, MENU_ITEM_ID)
+                .queryParam("quantity", 0)
+                .put("/cart/{userId}/items/{menuItemId}", USER_ID, MENU_ITEM_ID)
                 .then()
-                .statusCode(HttpStatus.ACCEPTED.value())
-                .body("items", hasSize(0))
-                .body("total", equalTo(0.0f));
-    }
+                .statusCode(HttpStatus.NO_CONTENT.value());
 
-    @Test
-    void removeNonExistentItem() {
-        given()
-                .delete("/cart/{userId}/items/{menuItemId}", USER_ID, "non-existent")
-                .then()
-                .statusCode(CART_NOT_FOUND.getCode());
+        verifyMissingCart();
     }
 
     @Test
@@ -224,11 +219,7 @@ class CartServiceApplicationTests {
                 .then()
                 .statusCode(HttpStatus.NO_CONTENT.value());
 
-        // Verify cart is empty
-        given()
-                .get("/cart/{userId}", USER_ID)
-                .then()
-                .statusCode(CART_NOT_FOUND.getCode());
+        verifyMissingCart();
     }
 
     private void addSampleItem() {
@@ -247,5 +238,12 @@ class CartServiceApplicationTests {
                 .post("/cart/{userId}/items", USER_ID)
                 .then()
                 .statusCode(HttpStatus.CREATED.value());
+    }
+
+    private void verifyMissingCart() {
+        given()
+                .get("/cart/{userId}", USER_ID)
+                .then()
+                .statusCode(CART_NOT_FOUND.getCode());
     }
 }
