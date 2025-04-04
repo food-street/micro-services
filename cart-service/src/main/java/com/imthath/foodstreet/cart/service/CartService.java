@@ -44,7 +44,12 @@ public class CartService {
     public Cart getCartOrCreate(String userId) {
         try {
             Object cartObj = redisTemplate.opsForValue().get(getCartKey(userId));
-            return cartObj != null ? objectMapper.convertValue(cartObj, Cart.class) : new Cart();
+            if (cartObj == null) {
+                Cart cart = new Cart();
+                cart.setUserId(userId);
+                return cart;
+            }
+            return objectMapper.convertValue(cartObj, Cart.class);
         } catch (Exception e) {
             throw new GenericException(CartError.CART_READ_FAILED);
         }
@@ -63,7 +68,6 @@ public class CartService {
         Cart cart = getCartOrCreate(userId);
         if (cart.getFoodCourtId() == null) {
             cart.setFoodCourtId(foodCourtId);
-            cart.setUserId(userId);
         } else if (!cart.getFoodCourtId().equals(foodCourtId)) {
             throw new GenericException(CartError.DIFFERENT_FOOD_COURT_ITEMS);
         }
