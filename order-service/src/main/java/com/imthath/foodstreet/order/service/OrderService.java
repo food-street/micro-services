@@ -4,12 +4,14 @@ import com.imthath.foodstreet.order.client.CartClient;
 import com.imthath.foodstreet.order.client.RestaurantClient;
 import com.imthath.foodstreet.order.model.*;
 import com.imthath.foodstreet.order.repository.OrderRepository;
+import com.imthath.foodstreet.order.util.OrderStatusUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,34 +54,76 @@ public class OrderService {
         order.setFoodCourtId(foodCourtId);
         order.setFoodCourtName("Food Court Name"); // TODO: Get from food court service
         order.setTotal(cart.total());
-        order.setStatus(OrderStatus.PAYMENT_PENDING);
+        order.setOverallStatus(OrderStatus.PAYMENT_PENDING);
 
-        List<OrderItem> orderItems = Arrays.stream(cart.items())
-            .map(cartItem -> {
-                OrderItem orderItem = new OrderItem();
-                orderItem.setOrder(order);
-                orderItem.setMenuItemId(cartItem.menuItemId());
-                orderItem.setRestaurantId(cartItem.restaurantId());
-                orderItem.setRestaurantName("Restaurant Name"); // TODO: Get from restaurant service
-                orderItem.setName(cartItem.name());
-                orderItem.setPrice(cartItem.price());
-                orderItem.setQuantity(cartItem.quantity());
-                orderItem.setNotes(cartItem.notes());
-                return orderItem;
-            })
-            .collect(Collectors.toList());
+        // Group cart items by restaurant
+        Map<String, List<CartItem>> itemsByRestaurant = Arrays.stream(cart.items())
+            .collect(Collectors.groupingBy(CartItem::restaurantId));
 
-        order.setItems(orderItems);
+        // Create restaurant orders for each restaurant
+        for (Map.Entry<String, List<CartItem>> entry : itemsByRestaurant.entrySet()) {
+            String restaurantId = entry.getKey();
+            List<CartItem> restaurantItems = entry.getValue();
+            
+            RestaurantOrder restaurantOrder = new RestaurantOrder();
+            restaurantOrder.setOrder(order);
+            restaurantOrder.setRestaurantId(restaurantId);
+            restaurantOrder.setRestaurantName("Restaurant Name"); // TODO: Get from restaurant service
+            restaurantOrder.setStatus(OrderStatus.PAYMENT_PENDING);
+            
+            List<OrderItem> orderItems = restaurantItems.stream()
+                .map(cartItem -> {
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setRestaurantOrder(restaurantOrder);
+                    orderItem.setMenuItemId(cartItem.menuItemId());
+                    orderItem.setName(cartItem.name());
+                    orderItem.setPrice(cartItem.price());
+                    orderItem.setQuantity(cartItem.quantity());
+                    orderItem.setNotes(cartItem.notes());
+                    return orderItem;
+                })
+                .collect(Collectors.toList());
+            
+            restaurantOrder.setItems(orderItems);
+            order.getRestaurantOrders().add(restaurantOrder);
+        }
+
         // no need for sending order updates from here.
         // Client doesn't even know the order id to subscribe updates at this point.
         return orderRepository.save(order);
     }
 
     @Transactional
-    public Order updateOrderStatus(String orderId, OrderStatus status) {
+    public Order updateOrderStatus(String orderId, String restaurantId, OrderStatus status) {
         final Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new IllegalArgumentException("Order not found"));
-        order.setStatus(status);
+        
+        // Find the restaurant order and update its status
+        order.getRestaurantOrders().stream()
+            .filter(ro -> ro.getRestaurantId().equals(restaurantId))
+            .findFirst()
+            .ifPresent(restaurantOrder -> restaurantOrder.setStatus(status));
+        
+        // Recalculate the overall order status
+        order.setOverallStatus(OrderStatusUtil.calculateOverallStatus(order));
+        
+        final Order updatedOrder = orderRepository.save(order);
+        // Send order status update
+        orderEventService.sendOrderUpdate(orderId, order);
+        return updatedOrder;
+    }
+
+    @Transactional
+    public Order updateAllOrderStatuses(String orderId, OrderStatus status) {
+        final Order order = orderRepository.findById(orderId)
+            .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+        
+        // Update status for all restaurant orders
+        order.getRestaurantOrders().forEach(ro -> ro.setStatus(status));
+        
+        // Set the overall status
+        order.setOverallStatus(status);
+        
         final Order updatedOrder = orderRepository.save(order);
         // Send order status update
         orderEventService.sendOrderUpdate(orderId, order);
@@ -95,6 +139,6 @@ public class OrderService {
     }
 
     public List<Order> getOrdersByRestaurant(String restaurantId) {
-        return orderRepository.findByItemsRestaurantId(restaurantId);
+        return orderRepository.findByRestaurantOrdersRestaurantId(restaurantId);
     }
 }

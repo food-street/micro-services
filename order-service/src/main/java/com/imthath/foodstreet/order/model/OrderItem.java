@@ -16,8 +16,8 @@ public class OrderItem {
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    private Order order;
+    @JoinColumn(name = "restaurant_order_id", nullable = false)
+    private RestaurantOrder restaurantOrder;
 
     @NotBlank(message = "Menu item ID is required")
     @Column(nullable = false)
