@@ -18,6 +18,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartClient cartClient;
     private final RestaurantClient restaurantClient;
+    private final OrderEventService orderEventService;
 
     @Transactional
     public Order createOrder(String userId) {
@@ -46,7 +47,7 @@ public class OrderService {
             }
         }
 
-        Order order = new Order();
+        final Order order = new Order();
         order.setUserId(userId);
         order.setFoodCourtId(foodCourtId);
         order.setFoodCourtName("Food Court Name"); // TODO: Get from food court service
@@ -69,15 +70,20 @@ public class OrderService {
             .collect(Collectors.toList());
 
         order.setItems(orderItems);
+        // no need for sending order updates from here.
+        // Client doesn't even know the order id to subscribe updates at this point.
         return orderRepository.save(order);
     }
 
     @Transactional
     public Order updateOrderStatus(String orderId, OrderStatus status) {
-        Order order = orderRepository.findById(orderId)
+        final Order order = orderRepository.findById(orderId)
             .orElseThrow(() -> new IllegalArgumentException("Order not found"));
         order.setStatus(status);
-        return orderRepository.save(order);
+        final Order updatedOrder = orderRepository.save(order);
+        // Send order status update
+        orderEventService.sendOrderUpdate(orderId, order);
+        return updatedOrder;
     }
 
     public List<Order> getOrdersByUser(String userId) {
