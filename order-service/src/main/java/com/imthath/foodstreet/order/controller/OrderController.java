@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/orders")
+@RequestMapping("/orders")
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
@@ -20,11 +20,12 @@ public class OrderController {
         return ResponseEntity.ok(orderService.createOrder(userId));
     }
 
-    @PatchMapping("/{orderId}/status")
+    @PatchMapping("/{orderId}/{restaurantId}/status")
     public ResponseEntity<Order> updateOrderStatus(
             @PathVariable String orderId,
+            @PathVariable String restaurantId,
             @RequestParam OrderStatus status) {
-        return ResponseEntity.ok(orderService.updateOrderStatus(orderId, status));
+        return ResponseEntity.ok(orderService.updateOrderStatus(orderId, restaurantId, status));
     }
 
     @GetMapping("/users/{userId}")
