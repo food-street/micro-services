@@ -1,7 +1,6 @@
-server:
-  port: 8081
-
 spring:
+  profiles:
+    active: ${SPRING_PROFILE:local}
   datasource:
     url: jdbc:mysql://localhost:3307/payment_db
     username: root

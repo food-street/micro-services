@@ -9,5 +9,6 @@
 
 */data/
 **/application-local.properties
+**/application-local.yml
 **/target
 **/service-account-key.json
