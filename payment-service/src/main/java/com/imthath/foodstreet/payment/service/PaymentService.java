@@ -1,5 +1,6 @@
 package com.imthath.foodstreet.payment.service;
 
+import com.imthath.foodstreet.payment.dto.PaymentRequestDTO;
 import com.imthath.foodstreet.payment.gateway.PaymentGateway;
 import com.imthath.foodstreet.payment.gateway.PaymentGatewayFactory;
 import com.imthath.foodstreet.payment.model.Payment;
@@ -26,14 +27,26 @@ public class PaymentService {
     private final PaymentGatewayFactory paymentGatewayFactory;
 
     @Transactional
-    public PaymentInitiationResponse initiatePayment(PaymentRequest request, String gatewayType) {
-        log.info("Initiating payment for order: {} with gateway: {}", request.getOrderId(), gatewayType);
+    public PaymentInitiationResponse initiatePayment(PaymentRequestDTO requestDTO, String gatewayType) {
+        log.info("Initiating payment for order: {} with gateway: {}", requestDTO.getOrderId(), gatewayType);
         
         // Check if payment already exists
-        paymentRepository.findByOrderId(request.getOrderId())
+        paymentRepository.findByOrderId(requestDTO.getOrderId())
             .ifPresent(payment -> {
-                throw new IllegalStateException("Payment already exists for order: " + request.getOrderId());
+                throw new IllegalStateException("Payment already exists for order: " + requestDTO.getOrderId());
             });
+
+        // Convert DTO to domain model
+        PaymentRequest request = PaymentRequest.builder()
+            .orderId(requestDTO.getOrderId())
+            .amount(requestDTO.getAmount())
+            .currency(requestDTO.getCurrency())
+            .paymentMethod(requestDTO.getPaymentMethod())
+            .customerName(requestDTO.getCustomerName())
+            .customerEmail(requestDTO.getCustomerEmail())
+            .customerPhone(requestDTO.getCustomerPhone())
+            .description(requestDTO.getDescription())
+            .build();
 
         // Get appropriate payment gateway
         PaymentGateway gateway = paymentGatewayFactory.getGateway(gatewayType);
