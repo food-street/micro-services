@@ -24,4 +24,10 @@ management:
         include: health,info,metrics
   endpoint:
     health:
-      show-details: always 
+      show-details: always
+
+razorpay:
+  key_id: ${RAZORPAY_KEY_ID}
+  key_secret: ${RAZORPAY_KEY_SECRET}
+  webhook_secret: ${RAZORPAY_WEBHOOK_SECRET}
+  mode: ${RAZORPAY_MODE:test}  # test/live 
