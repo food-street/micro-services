@@ -30,4 +30,19 @@ razorpay:
   key_id: ${RAZORPAY_KEY_ID}
   key_secret: ${RAZORPAY_KEY_SECRET}
   webhook_secret: ${RAZORPAY_WEBHOOK_SECRET}
-  mode: ${RAZORPAY_MODE:test}  # test/live 
+  mode: ${RAZORPAY_MODE}  # test/live 
+
+# SpringDoc OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+    operationsSorter: method
+    tagsSorter: alpha
+    tryItOutEnabled: true
+  show-actuator: false
+  default-consumes-media-type: application/json
+  default-produces-media-type: application/json 
