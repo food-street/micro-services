@@ -1,5 +1,6 @@
 package com.imthath.foodstreet.payment.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -47,6 +48,7 @@ public class Payment {
 
     @Schema(description = "List of payment attempts")
     @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<PaymentAttempt> attempts = new ArrayList<>();
 
     @Schema(description = "Timestamp when the payment was created", example = "2023-06-15T14:30:00")

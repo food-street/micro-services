@@ -1,5 +1,6 @@
 package com.imthath.foodstreet.payment.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,6 +16,7 @@ public class PaymentAttempt {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "payment_id", nullable = false)
+    @JsonBackReference
     private Payment payment;
 
     @Column(name = "attempt_number", nullable = false)
