@@ -27,7 +27,10 @@ public class PaymentAttempt {
     @Column(name = "error_message")
     private String errorMessage;
 
+    @Column(name = "gateway_payment_id")
+    private String gatewayPaymentId;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-} 
+}

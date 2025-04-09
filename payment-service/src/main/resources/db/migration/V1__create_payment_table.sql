@@ -16,6 +16,7 @@ CREATE TABLE payment_attempts (
     attempt_number INT NOT NULL,
     status VARCHAR(20) NOT NULL,
     error_message TEXT,
+    gateway_payment_id VARCHAR(100),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (payment_id) REFERENCES payments(id)
 ); 
