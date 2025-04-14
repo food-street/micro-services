@@ -47,14 +47,9 @@ public class MenuServiceApplication {
 	@Bean
 	public ToolCallbackProvider menuTools(ApplicationContext applicationContext) {
 		List<Object> controllers = getRestControllerBeans(applicationContext);
-		Stream<Method> toolMethods = controllers
-				.stream()
-				.flatMap(obj -> Arrays.stream(obj.getClass().getDeclaredMethods()).filter(this::isRequestMethod));
-		List<MethodToolCallback> toolCallbacks = toolMethods
-				.map(m -> toolCallback(m, controllers.getFirst()))
-				.toList();
-		log.info("Registered {} tool callbacks from {} controllers", toolCallbacks.size(), controllers.size());
-		return ToolCallbackProvider.from(toolCallbacks);
+		return ToolCallbackProvider.from(
+				controllers.stream().flatMap(this::getToolCallBacksFromRestControllerObject).toList()
+		);
 	}
 
 	private MethodToolCallback toolCallback(Method method, Object bean) {
@@ -73,6 +68,16 @@ public class MenuServiceApplication {
 			method.isAnnotationPresent(PutMapping.class) ||
 			method.isAnnotationPresent(DeleteMapping.class) ||
 			method.isAnnotationPresent(PatchMapping.class);
+	}
+
+	private Stream<MethodToolCallback> getToolCallBacksFromRestControllerObject(Object object) {
+		Stream<Method> toolMethods = Arrays
+				.stream(object.getClass().getDeclaredMethods())
+				.filter(this::isRequestMethod);
+//		log.info("Found {} tool methods from {}", toolMethods.count(), object);
+
+		return toolMethods
+				.map(method -> toolCallback(method, object));
 	}
 
 	private List<Object> getRestControllerBeans(ApplicationContext applicationContext) {
