@@ -4,6 +4,7 @@ import com.imthath.food_street.menu_service.dto.*;
 import com.imthath.food_street.menu_service.model.Category;
 import com.imthath.food_street.menu_service.model.Item;
 import jakarta.validation.Valid;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -65,6 +66,7 @@ public class MenuController {
 
     @DeleteMapping("/{restaurantId}/items/{itemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Tool
     public void deleteItem(
             @PathVariable long restaurantId,
             @PathVariable String itemId) {
@@ -73,6 +75,7 @@ public class MenuController {
 
     @PostMapping("/{restaurantId}/categories")
     @ResponseStatus(HttpStatus.CREATED)
+    @Tool
     public Category createCategory(
             @PathVariable long restaurantId,
             @Valid @RequestBody CreateCategoryRequest request) {
