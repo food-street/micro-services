@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 @SpringBootApplication
@@ -46,18 +47,13 @@ public class MenuServiceApplication {
 	@Bean
 	public ToolCallbackProvider menuTools(ApplicationContext applicationContext) {
 		List<Object> controllers = getRestControllerBeans(applicationContext);
-		List<Method> toolMethods = controllers
+		Stream<Method> toolMethods = controllers
 				.stream()
-				.flatMap(obj -> Arrays.stream(obj.getClass().getDeclaredMethods()).filter(this::isRequestMethod))
+				.flatMap(obj -> Arrays.stream(obj.getClass().getDeclaredMethods()).filter(this::isRequestMethod));
+		List<MethodToolCallback> toolCallbacks = toolMethods
+				.map(m -> toolCallback(m, controllers.getFirst()))
 				.toList();
-		log.info("Found {} tool methods from {} controllers", toolMethods.size(), controllers.size());
-
-		List<ToolCallback> toolCallbacks = new ArrayList<>();
-		for (Method method: toolMethods) {
-			log.info("Tool method: {}.{}()", method.getDeclaringClass().getSimpleName(), method.getName());
-			// Register the method as a tool callback
-			toolCallbacks.add(toolCallback(method, controllers.getFirst()));
-		}
+		log.info("Registered {} tool callbacks from {} controllers", toolCallbacks.size(), controllers.size());
 		return ToolCallbackProvider.from(toolCallbacks);
 	}
 
