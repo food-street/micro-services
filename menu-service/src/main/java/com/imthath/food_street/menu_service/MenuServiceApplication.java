@@ -2,6 +2,7 @@ package com.imthath.food_street.menu_service;
 
 import com.imthath.utils.guardrail.GlobalExceptionHandler;
 import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.function.FunctionToolCallback;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,7 +14,14 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +39,30 @@ public class MenuServiceApplication {
 	@Bean
 	public ToolCallbackProvider menuTools(ApplicationContext applicationContext) {
 		List<Object> controllers = getRestControllerBeans(applicationContext);
-		
+		List<Method> toolMethods = controllers
+				.stream()
+				.flatMap(controller -> {
+			List<Method> methods = new ArrayList<>();
+			for (Method method : controller.getClass().getDeclaredMethods()) {
+				if (isRequestMethod(method)) {
+					methods.add(method);
+				}
+			}
+			return methods.stream();
+		})
+				.toList();
 		return MethodToolCallbackProvider.builder()
 			.toolObjects(controllers.toArray())
 			.build();
+	}
+
+	private Boolean isRequestMethod(Method method) {
+		return method.isAnnotationPresent(RequestMapping.class) ||
+			method.isAnnotationPresent(GetMapping.class) ||
+			method.isAnnotationPresent(PostMapping.class) ||
+			method.isAnnotationPresent(PutMapping.class) ||
+			method.isAnnotationPresent(DeleteMapping.class) ||
+			method.isAnnotationPresent(PatchMapping.class);
 	}
 
 	private List<Object> getRestControllerBeans(ApplicationContext applicationContext) {
@@ -59,68 +87,5 @@ public class MenuServiceApplication {
 		}
 		
 		return controllers;
-	}
-
-	private void printRequestMappingInfo(ApplicationContext context) {
-		System.out.println("\n=== Request Mapping Information ===");
-		List<Object> controllers = getRestControllerBeans(context);
-		for (Object bean : controllers) {
-			Class<?> beanClass = bean.getClass();
-			System.out.println("\nController: " + beanClass.getSimpleName());
-			// Get class-level RequestMapping
-			RequestMapping classMapping = beanClass.getAnnotation(RequestMapping.class);
-			String basePath = "";
-			if (classMapping != null && classMapping.value().length > 0) {
-				basePath = classMapping.value()[0];
-			}
-			// Get all methods with RequestMapping annotations
-			for (Method method : beanClass.getDeclaredMethods()) {
-				String path = basePath;
-				String httpMethod = "UNKNOWN";
-				if (method.isAnnotationPresent(RequestMapping.class)) {
-					RequestMapping mapping = method.getAnnotation(RequestMapping.class);
-					if (mapping.value().length > 0) {
-						path += mapping.value()[0];
-					}
-					if (mapping.method().length > 0) {
-						httpMethod = mapping.method()[0].name();
-					}
-				} else if (method.isAnnotationPresent(GetMapping.class)) {
-					GetMapping mapping = method.getAnnotation(GetMapping.class);
-					if (mapping.value().length > 0) {
-						path += mapping.value()[0];
-					}
-					httpMethod = "GET";
-				} else if (method.isAnnotationPresent(PostMapping.class)) {
-					PostMapping mapping = method.getAnnotation(PostMapping.class);
-					if (mapping.value().length > 0) {
-						path += mapping.value()[0];
-					}
-					httpMethod = "POST";
-				} else if (method.isAnnotationPresent(PutMapping.class)) {
-					PutMapping mapping = method.getAnnotation(PutMapping.class);
-					if (mapping.value().length > 0) {
-						path += mapping.value()[0];
-					}
-					httpMethod = "PUT";
-				} else if (method.isAnnotationPresent(DeleteMapping.class)) {
-					DeleteMapping mapping = method.getAnnotation(DeleteMapping.class);
-					if (mapping.value().length > 0) {
-						path += mapping.value()[0];
-					}
-					httpMethod = "DELETE";
-				} else if (method.isAnnotationPresent(PatchMapping.class)) {
-					PatchMapping mapping = method.getAnnotation(PatchMapping.class);
-					if (mapping.value().length > 0) {
-						path += mapping.value()[0];
-					}
-					httpMethod = "PATCH";
-				}
-				if (!httpMethod.equals("UNKNOWN")) {
-					System.out.printf("  %-7s %s%n", httpMethod, path);
-				}
-			}
-		}
-		System.out.println("\n================================");
 	}
 }
