@@ -30,7 +30,14 @@ public class MenuServiceApplication {
 
 	@Bean
 	public ToolCallbackProvider menuTools(ApplicationContext applicationContext) {
-		// Get all bean names
+		List<Object> controllers = getRestControllerBeans(applicationContext);
+		
+		return MethodToolCallbackProvider.builder()
+			.toolObjects(controllers.toArray())
+			.build();
+	}
+
+	private List<Object> getRestControllerBeans(ApplicationContext applicationContext) {
 		String[] beanNames = applicationContext.getBeanDefinitionNames();
 		List<Object> controllers = new ArrayList<>();
 		
@@ -51,8 +58,8 @@ public class MenuServiceApplication {
 			}
 		}
 		
-		return MethodToolCallbackProvider.builder()
-			.toolObjects(controllers.toArray())
-			.build();
+		return controllers;
 	}
+
+	
 }
