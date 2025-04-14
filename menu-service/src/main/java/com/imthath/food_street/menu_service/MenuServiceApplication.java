@@ -46,9 +46,10 @@ public class MenuServiceApplication {
 
 	@Bean
 	public ToolCallbackProvider menuTools(ApplicationContext applicationContext) {
-		List<Object> controllers = getRestControllerBeans(applicationContext);
 		return ToolCallbackProvider.from(
-				controllers.stream().flatMap(this::getToolCallBacksFromRestControllerObject).toList()
+			getRestControllerBeans(applicationContext)
+				.flatMap(this::getToolCallBacksFromRestControllerObject)
+				.toList()
 		);
 	}
 
@@ -71,36 +72,33 @@ public class MenuServiceApplication {
 	}
 
 	private Stream<MethodToolCallback> getToolCallBacksFromRestControllerObject(Object object) {
-		Stream<Method> toolMethods = Arrays
+		return Arrays
 				.stream(object.getClass().getDeclaredMethods())
-				.filter(this::isRequestMethod);
-//		log.info("Found {} tool methods from {}", toolMethods.count(), object);
-
-		return toolMethods
-				.map(method -> toolCallback(method, object));
+				.flatMap(method -> {
+					if (isRequestMethod(method)) {
+						return Stream.of(toolCallback(method, object));
+					}
+					return Stream.empty();
+				});
 	}
 
-	private List<Object> getRestControllerBeans(ApplicationContext applicationContext) {
-		String[] beanNames = applicationContext.getBeanDefinitionNames();
-		List<Object> controllers = new ArrayList<>();
-		
-		// Filter for RestController annotated beans
-		for (String beanName : beanNames) {
-			// Skip the menuTools bean itself to avoid circular dependency
-			if ("menuTools".equals(beanName)) {
-				continue;
-			}
-			
-			try {
-				Object bean = applicationContext.getBean(beanName);
-				if (bean.getClass().isAnnotationPresent(RestController.class)) {
-					controllers.add(bean);
-				}
-			} catch (Exception e) {
-				// Skip if there's an error getting the bean
-			}
-		}
-		
-		return controllers;
+	private Stream<Object> getRestControllerBeans(ApplicationContext applicationContext) {
+		return Arrays
+				.stream(applicationContext.getBeanDefinitionNames())
+				.flatMap(beanName -> {
+					// Skip the menuTools bean itself to avoid circular dependency
+					if ("menuTools".equals(beanName)) {
+						return Stream.empty();
+					}
+					try {
+						Object bean = applicationContext.getBean(beanName);
+						if (bean.getClass().isAnnotationPresent(RestController.class)) {
+							return Stream.of(bean);
+						}
+					} catch (Exception e) {
+						// Skip if there's an error getting the bean
+					}
+                    return Stream.empty();
+                });
 	}
 }
