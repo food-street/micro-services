@@ -2,9 +2,13 @@ package com.imthath.food_street.menu_service;
 
 import com.imthath.utils.guardrail.GlobalExceptionHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.ToolCallbackProvider;
+import org.springframework.ai.tool.definition.ToolDefinition;
 import org.springframework.ai.tool.function.FunctionToolCallback;
+import org.springframework.ai.tool.method.MethodToolCallback;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
+import org.springframework.ai.tool.util.ToolUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -47,9 +51,23 @@ public class MenuServiceApplication {
 				.flatMap(obj -> Arrays.stream(obj.getClass().getDeclaredMethods()).filter(this::isRequestMethod))
 				.toList();
 		log.info("Found {} tool methods from {} controllers", toolMethods.size(), controllers.size());
-		return MethodToolCallbackProvider.builder()
-			.toolObjects(controllers.toArray())
-			.build();
+
+		List<ToolCallback> toolCallbacks = new ArrayList<>();
+		for (Method method: toolMethods) {
+			log.info("Tool method: {}.{}()", method.getDeclaringClass().getSimpleName(), method.getName());
+			// Register the method as a tool callback
+			toolCallbacks.add(toolCallback(method, controllers.getFirst()));
+		}
+		return ToolCallbackProvider.from(toolCallbacks);
+	}
+
+	private MethodToolCallback toolCallback(Method method, Object bean) {
+		return MethodToolCallback.builder()
+				.toolDefinition(ToolDefinition.from(method))
+				.toolMethod(method)
+				.toolCallResultConverter(ToolUtils.getToolCallResultConverter(method))
+				.toolObject(bean)
+				.build();
 	}
 
 	private Boolean isRequestMethod(Method method) {
