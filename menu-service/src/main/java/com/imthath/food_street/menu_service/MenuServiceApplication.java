@@ -1,6 +1,7 @@
 package com.imthath.food_street.menu_service;
 
 import com.imthath.utils.guardrail.GlobalExceptionHandler;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.function.FunctionToolCallback;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
@@ -23,8 +24,10 @@ import org.springframework.web.bind.annotation.PatchMapping;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @SpringBootApplication
 @EnableMongoAuditing
 public class MenuServiceApplication {
@@ -41,16 +44,9 @@ public class MenuServiceApplication {
 		List<Object> controllers = getRestControllerBeans(applicationContext);
 		List<Method> toolMethods = controllers
 				.stream()
-				.flatMap(controller -> {
-			List<Method> methods = new ArrayList<>();
-			for (Method method : controller.getClass().getDeclaredMethods()) {
-				if (isRequestMethod(method)) {
-					methods.add(method);
-				}
-			}
-			return methods.stream();
-		})
+				.flatMap(obj -> Arrays.stream(obj.getClass().getDeclaredMethods()).filter(this::isRequestMethod))
 				.toList();
+		log.info("Found {} tool methods from {} controllers", toolMethods.size(), controllers.size());
 		return MethodToolCallbackProvider.builder()
 			.toolObjects(controllers.toArray())
 			.build();
