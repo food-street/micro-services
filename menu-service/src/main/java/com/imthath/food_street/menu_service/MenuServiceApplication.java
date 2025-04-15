@@ -9,6 +9,7 @@ import org.springframework.ai.tool.function.FunctionToolCallback;
 import org.springframework.ai.tool.method.MethodToolCallback;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.ai.tool.util.ToolUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -47,9 +48,12 @@ public class MenuServiceApplication {
 	@Bean
 	public ToolCallbackProvider menuTools(ApplicationContext applicationContext) {
 		return ToolCallbackProvider.from(
-			getRestControllerBeans(applicationContext)
-				.flatMap(this::getToolCallBacksFromRestControllerObject)
-				.toList()
+				applicationContext
+					.getBeansWithAnnotation(RestController.class)
+					.values()
+					.stream()
+					.flatMap(this::getToolCallBacksFromRestControllerObject)
+					.toList()
 		);
 	}
 
